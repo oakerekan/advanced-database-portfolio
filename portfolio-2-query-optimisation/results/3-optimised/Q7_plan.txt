@@ -1,0 +1,53 @@
+-- Q7: Billing desk: a patient's outstanding invoices
+-- phase: 3-optimised
+
+SELECT i.invoice_no, t.total AS total_amount, COALESCE(p.paid, 0) AS amount_paid,
+       t.total - COALESCE(p.paid, 0) AS balance_due
+FROM invoice i
+CROSS JOIN LATERAL (SELECT COALESCE(sum(quantity * unit_price), 0) AS total
+                      FROM invoice_item WHERE invoice_id = i.invoice_id) t
+CROSS JOIN LATERAL (SELECT sum(amount) AS paid
+                      FROM payment WHERE invoice_id = i.invoice_id) p
+WHERE i.patient_id = (SELECT patient_id FROM patient WHERE hospital_no = 'LCH-0000013')
+  AND t.total - COALESCE(p.paid, 0) > 0
+ORDER BY i.invoice_no;
+
+                                                                                QUERY PLAN                                                                                
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=183.66..183.67 rows=2 width=109) (actual time=0.280..0.282 rows=2 loops=1)
+   Sort Key: i.invoice_no
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=87
+   InitPlan 1 (returns $0)
+     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.010..0.010 rows=1 loops=1)
+           Index Cond: ((hospital_no)::text = 'LCH-0000013'::text)
+           Buffers: shared hit=3
+   ->  Nested Loop  (cost=28.98..175.35 rows=2 width=109) (actual time=0.235..0.261 rows=2 loops=1)
+         Join Filter: (((COALESCE(sum((invoice_item.quantity * invoice_item.unit_price)), '0'::numeric)) - COALESCE((sum(payment.amount)), '0'::numeric)) > '0'::numeric)
+         Rows Removed by Join Filter: 6
+         Buffers: shared hit=84
+         ->  Nested Loop  (cost=20.54..124.54 rows=6 width=53) (actual time=0.054..0.167 rows=8 loops=1)
+               Buffers: shared hit=53
+               ->  Bitmap Heap Scan on invoice i  (cost=4.47..28.00 rows=6 width=21) (actual time=0.033..0.050 rows=8 loops=1)
+                     Recheck Cond: (patient_id = $0)
+                     Heap Blocks: exact=8
+                     Buffers: shared hit=14
+                     ->  Bitmap Index Scan on idx_invoice_patient  (cost=0.00..4.47 rows=6 width=0) (actual time=0.027..0.027 rows=8 loops=1)
+                           Index Cond: (patient_id = $0)
+                           Buffers: shared hit=6
+               ->  Aggregate  (cost=16.07..16.08 rows=1 width=32) (actual time=0.014..0.014 rows=1 loops=8)
+                     Buffers: shared hit=39
+                     ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..16.05 rows=3 width=10) (actual time=0.009..0.011 rows=3 loops=8)
+                           Index Cond: (invoice_id = i.invoice_id)
+                           Buffers: shared hit=39
+         ->  Aggregate  (cost=8.44..8.45 rows=1 width=32) (actual time=0.011..0.011 rows=1 loops=8)
+               Buffers: shared hit=31
+               ->  Index Scan using idx_payment_invoice on payment  (cost=0.42..8.44 rows=1 width=7) (actual time=0.010..0.010 rows=1 loops=8)
+                     Index Cond: (invoice_id = i.invoice_id)
+                     Buffers: shared hit=31
+ Planning:
+   Buffers: shared hit=415
+ Planning Time: 0.847 ms
+ Execution Time: 0.377 ms
+(35 rows)
+

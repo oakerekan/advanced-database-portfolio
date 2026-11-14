@@ -1,0 +1,9 @@
+query,title,median_ms,all_runs_ms
+Q1,"Patient history for a doctor (all visits, diagnoses, drugs)",0.431,0.421 0.431 0.442 0.411 0.431
+Q2,One doctor's schedule for a day,30.426,29.886 30.795 30.927 30.426 29.635
+Q3,Front-desk clinic list: all appointments at the Lekki branch for a day,1.446,1.456 1.439 1.443 1.556 1.446
+Q4,"Front-desk patient search by name (case-insensitive, prefix on first name)",0.559,0.599 0.530 0.565 0.559 0.530
+Q5,Cashier end-of-day: takings by payment method for one day,19.638,19.638 19.679 19.656 19.328 19.448
+Q6,Management report: monthly revenue billed per branch in 2025,312.452,297.177 307.339 312.681 326.368 312.452
+Q7,Billing desk: a patient's outstanding invoices,665.732,662.216 666.172 680.370 653.838 665.732
+Q8,"Lab dashboard: urgent tests still waiting, oldest first",0.727,0.727 0.709 0.727 0.754 0.760

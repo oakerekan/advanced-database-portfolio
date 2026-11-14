@@ -1,0 +1,60 @@
+-- Q6: Management report: monthly revenue billed per branch in 2025
+-- phase: 1-baseline
+
+SELECT b.branch_code,
+       date_trunc('month', i.issued_at)::date AS month,
+       sum(ii.quantity * ii.unit_price)       AS revenue
+FROM invoice i
+JOIN invoice_item ii USING (invoice_id)
+JOIN branch b USING (branch_id)
+WHERE i.issued_at >= '2025-01-01' AND i.issued_at < '2026-01-01'
+  AND i.status <> 'void'
+GROUP BY b.branch_code, month
+ORDER BY b.branch_code, month;
+
+                                                                                                            QUERY PLAN                                                                                                             
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=31716.99..31761.65 rows=17865 width=40) (actual time=310.136..313.292 rows=36 loops=1)
+   Sort Key: b.branch_code, ((date_trunc('month'::text, i.issued_at))::date)
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=5194 read=8971 written=19
+   ->  Finalize HashAggregate  (cost=30142.65..30455.28 rows=17865 width=40) (actual time=309.949..313.234 rows=36 loops=1)
+         Group Key: b.branch_code, ((date_trunc('month'::text, i.issued_at))::date)
+         Batches: 1  Memory Usage: 817kB
+         Buffers: shared hit=5188 read=8971 written=19
+         ->  Gather  (cost=25899.71..29785.35 rows=35730 width=40) (actual time=308.671..313.013 rows=108 loops=1)
+               Workers Planned: 2
+               Workers Launched: 2
+               Buffers: shared hit=5188 read=8971 written=19
+               ->  Partial HashAggregate  (cost=24899.71..25212.35 rows=17865 width=40) (actual time=304.501..304.643 rows=36 loops=3)
+                     Group Key: b.branch_code, (date_trunc('month'::text, i.issued_at))::date
+                     Batches: 1  Memory Usage: 801kB
+                     Buffers: shared hit=5188 read=8971 written=19
+                     Worker 0:  Batches: 1  Memory Usage: 801kB
+                     Worker 1:  Batches: 1  Memory Usage: 801kB
+                     ->  Hash Join  (cost=9456.41..23124.26 rows=177545 width=18) (actual time=40.617..240.673 rows=139888 loops=3)
+                           Hash Cond: (i.branch_id = b.branch_id)
+                           Buffers: shared hit=5188 read=8971 written=19
+                           ->  Parallel Hash Join  (cost=9455.34..21111.01 rows=177545 width=20) (actual time=40.562..173.812 rows=139888 loops=3)
+                                 Hash Cond: (ii.invoice_id = i.invoice_id)
+                                 Buffers: shared hit=5155 read=8971 written=19
+                                 ->  Parallel Seq Scan on invoice_item ii  (cost=0.00..10802.01 rows=325201 width=18) (actual time=0.020..35.201 rows=260161 loops=3)
+                                       Buffers: shared hit=576 read=6974 written=19
+                                 ->  Parallel Hash  (cost=8638.54..8638.54 rows=65344 width=18) (actual time=39.307..39.308 rows=51677 loops=3)
+                                       Buckets: 262144  Batches: 1  Memory Usage: 10560kB
+                                       Buffers: shared hit=4547 read=1997
+                                       ->  Parallel Seq Scan on invoice i  (cost=0.00..8638.54 rows=65344 width=18) (actual time=2.069..20.008 rows=51677 loops=3)
+                                             Filter: ((issued_at >= '2025-01-01 00:00:00+01'::timestamp with time zone) AND (issued_at < '2026-01-01 00:00:00+01'::timestamp with time zone) AND ((status)::text <> 'void'::text))
+                                             Rows Removed by Filter: 44073
+                                             Buffers: shared hit=4547 read=1997
+                           ->  Hash  (cost=1.03..1.03 rows=3 width=6) (actual time=0.018..0.018 rows=3 loops=3)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=3
+                                 ->  Seq Scan on branch b  (cost=0.00..1.03 rows=3 width=6) (actual time=0.012..0.013 rows=3 loops=3)
+                                       Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=438
+ Planning Time: 0.943 ms
+ Execution Time: 314.191 ms
+(42 rows)
+

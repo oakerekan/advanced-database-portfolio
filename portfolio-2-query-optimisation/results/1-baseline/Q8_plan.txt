@@ -1,0 +1,45 @@
+-- Q8: Lab dashboard: urgent tests still waiting, oldest first
+-- phase: 1-baseline
+
+SELECT lr.request_id, lr.requested_at, lr.priority, t.test_code, e.branch_id
+FROM lab_request lr
+JOIN lab_test t USING (test_id)
+JOIN encounter e USING (encounter_id)
+WHERE lr.status = 'requested'
+  AND lr.priority IN ('urgent','stat')
+ORDER BY lr.requested_at, lr.request_id
+LIMIT 50;
+
+                                                                     QUERY PLAN                                                                      
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=4161.98..4579.28 rows=50 width=29) (actual time=9.772..11.541 rows=50 loops=1)
+   Buffers: shared hit=2051
+   ->  Nested Loop  (cost=4161.98..5472.29 rows=157 width=29) (actual time=9.771..11.535 rows=50 loops=1)
+         Buffers: shared hit=2051
+         ->  Nested Loop  (cost=4161.56..4215.21 rows=157 width=35) (actual time=9.707..11.319 rows=50 loops=1)
+               Buffers: shared hit=1851
+               ->  Gather Merge  (cost=4161.42..4179.31 rows=157 width=35) (actual time=9.694..11.262 rows=50 loops=1)
+                     Workers Planned: 1
+                     Workers Launched: 1
+                     Buffers: shared hit=1751
+                     ->  Sort  (cost=3161.41..3161.64 rows=92 width=35) (actual time=8.345..8.349 rows=56 loops=2)
+                           Sort Key: lr.requested_at, lr.request_id
+                           Sort Method: quicksort  Memory: 31kB
+                           Buffers: shared hit=1751
+                           Worker 0:  Sort Method: quicksort  Memory: 30kB
+                           ->  Parallel Seq Scan on lab_request lr  (cost=0.00..3158.41 rows=92 width=35) (actual time=0.620..8.279 rows=94 loops=2)
+                                 Filter: (((priority)::text = ANY ('{urgent,stat}'::text[])) AND ((status)::text = 'requested'::text))
+                                 Rows Removed by Filter: 82492
+                                 Buffers: shared hit=1704
+               ->  Index Scan using lab_test_pkey on lab_test t  (cost=0.14..0.23 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=50)
+                     Index Cond: (test_id = lr.test_id)
+                     Buffers: shared hit=100
+         ->  Index Scan using encounter_pkey on encounter e  (cost=0.42..8.01 rows=1 width=10) (actual time=0.004..0.004 rows=1 loops=50)
+               Index Cond: (encounter_id = lr.encounter_id)
+               Buffers: shared hit=200
+ Planning:
+   Buffers: shared hit=382
+ Planning Time: 1.163 ms
+ Execution Time: 15.115 ms
+(29 rows)
+

@@ -1,0 +1,86 @@
+-- Q1: Patient history for a doctor (all visits, diagnoses, drugs)
+-- phase: 1-baseline
+
+SELECT e.started_at::date                          AS visit_date,
+       b.branch_code,
+       s.first_name || ' ' || s.last_name           AS doctor,
+       e.chief_complaint,
+       d.icd10_code || ' ' || d.description         AS primary_diagnosis,
+       (SELECT string_agg(dr.generic_name || ' ' || dr.strength, ', ')
+          FROM prescription p
+          JOIN prescription_item pi USING (prescription_id)
+          JOIN drug dr USING (drug_id)
+         WHERE p.encounter_id = e.encounter_id)     AS drugs
+FROM patient pt
+JOIN encounter e  ON e.patient_id = pt.patient_id
+JOIN branch b     ON b.branch_id = e.branch_id
+JOIN staff s      ON s.staff_id = e.doctor_id
+LEFT JOIN diagnosis d ON d.encounter_id = e.encounter_id AND d.is_primary
+WHERE pt.hospital_no = 'LCH-0000013'
+ORDER BY e.started_at DESC;
+
+                                                                                    QUERY PLAN                                                                                     
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Gather Merge  (cost=6134.20..23372.64 rows=5 width=126) (actual time=35.733..81.333 rows=8 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=14862
+   ->  Sort  (cost=5134.17..5134.18 rows=2 width=69) (actual time=23.267..23.271 rows=3 loops=3)
+         Sort Key: e.started_at DESC
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=3881
+         Worker 0:  Sort Method: quicksort  Memory: 25kB
+         Worker 1:  Sort Method: quicksort  Memory: 25kB
+         ->  Nested Loop Left Join  (cost=9.14..5134.16 rows=2 width=69) (actual time=12.930..23.242 rows=3 loops=3)
+               Buffers: shared hit=3863
+               ->  Nested Loop  (cost=8.72..5133.15 rows=2 width=47) (actual time=12.910..23.205 rows=3 loops=3)
+                     Buffers: shared hit=3829
+                     ->  Nested Loop  (cost=8.45..5132.57 rows=2 width=38) (actual time=12.890..23.178 rows=3 loops=3)
+                           Buffers: shared hit=3803
+                           ->  Hash Join  (cost=8.32..5132.28 rows=2 width=36) (actual time=12.871..23.151 rows=3 loops=3)
+                                 Hash Cond: (e.patient_id = pt.patient_id)
+                                 Buffers: shared hit=3785
+                                 ->  Parallel Seq Scan on encounter e  (cost=0.00..4822.88 rows=114688 width=44) (actual time=0.004..15.084 rows=91750 loops=3)
+                                       Buffers: shared hit=3676
+                                 ->  Hash  (cost=8.31..8.31 rows=1 width=8) (actual time=0.019..0.020 rows=1 loops=3)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                       Buffers: shared hit=11
+                                       ->  Index Scan using patient_hospital_no_key on patient pt  (cost=0.29..8.31 rows=1 width=8) (actual time=0.015..0.016 rows=1 loops=3)
+                                             Index Cond: ((hospital_no)::text = 'LCH-0000013'::text)
+                                             Buffers: shared hit=11
+                           ->  Index Scan using branch_pkey on branch b  (cost=0.13..0.15 rows=1 width=6) (actual time=0.007..0.007 rows=1 loops=8)
+                                 Index Cond: (branch_id = e.branch_id)
+                                 Buffers: shared hit=18
+                     ->  Index Scan using staff_pkey on staff s  (cost=0.27..0.29 rows=1 width=17) (actual time=0.008..0.008 rows=1 loops=8)
+                           Index Cond: (staff_id = e.doctor_id)
+                           Buffers: shared hit=26
+               ->  Index Scan using uq_one_primary_diagnosis on diagnosis d  (cost=0.42..0.50 rows=1 width=30) (actual time=0.012..0.012 rows=1 loops=8)
+                     Index Cond: (encounter_id = e.encounter_id)
+                     Buffers: shared hit=34
+   SubPlan 1
+     ->  Aggregate  (cost=3447.55..3447.56 rows=1 width=32) (actual time=6.654..6.654 rows=1 loops=8)
+           Buffers: shared hit=10981
+           ->  Nested Loop  (cost=0.42..3447.53 rows=2 width=19) (actual time=6.211..6.649 rows=1 loops=8)
+                 Join Filter: (pi.drug_id = dr.drug_id)
+                 Rows Removed by Join Filter: 149
+                 Buffers: shared hit=10981
+                 ->  Seq Scan on drug dr  (cost=0.00..3.20 rows=120 width=23) (actual time=0.008..0.015 rows=120 loops=8)
+                       Buffers: shared hit=16
+                 ->  Materialize  (cost=0.42..3440.74 rows=2 width=4) (actual time=0.044..0.055 rows=1 loops=960)
+                       Buffers: shared hit=10965
+                       ->  Nested Loop  (cost=0.42..3440.73 rows=2 width=4) (actual time=5.266..6.594 rows=1 loops=8)
+                             Buffers: shared hit=10965
+                             ->  Seq Scan on prescription p  (cost=0.00..3436.25 rows=1 width=8) (actual time=5.259..6.586 rows=0 loops=8)
+                                   Filter: (encounter_id = e.encounter_id)
+                                   Rows Removed by Filter: 165380
+                                   Buffers: shared hit=10952
+                             ->  Index Only Scan using prescription_item_pkey on prescription_item pi  (cost=0.42..4.46 rows=2 width=12) (actual time=0.010..0.010 rows=2 loops=4)
+                                   Index Cond: (prescription_id = p.prescription_id)
+                                   Heap Fetches: 0
+                                   Buffers: shared hit=13
+ Planning:
+   Buffers: shared hit=799
+ Planning Time: 1.894 ms
+ Execution Time: 81.469 ms
+(61 rows)
+

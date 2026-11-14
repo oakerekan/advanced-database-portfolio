@@ -1,0 +1,12 @@
+             index             |    table     | index_size | table_size 
+-------------------------------+--------------+------------+------------
+ idx_appointment_branch_start  | appointment  | 2160 kB    | 32 MB
+ idx_encounter_patient_started | encounter    | 8488 kB    | 29 MB
+ idx_invoice_patient           | invoice      | 3392 kB    | 51 MB
+ idx_lab_request_pending       | lab_request  | 32 kB      | 13 MB
+ idx_patient_name_search       | patient      | 448 kB     | 8400 kB
+ idx_payment_invoice           | payment      | 5704 kB    | 22 MB
+ idx_payment_paid_at           | payment      | 5704 kB    | 22 MB
+ idx_prescription_encounter    | prescription | 3648 kB    | 11 MB
+(8 rows)
+

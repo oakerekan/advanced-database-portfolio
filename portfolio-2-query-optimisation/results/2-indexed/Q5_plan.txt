@@ -1,0 +1,40 @@
+-- Q5: Cashier end-of-day: takings by payment method for one day
+-- phase: 2-indexed
+
+SELECT method, count(*) AS payments, sum(amount) AS total
+FROM payment
+WHERE paid_at::date = DATE '2026-06-01'
+GROUP BY method
+ORDER BY total DESC;
+
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=6154.44..6154.46 rows=5 width=46) (actual time=17.553..19.378 rows=5 loops=1)
+   Sort Key: (sum(amount)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=2867
+   ->  Finalize GroupAggregate  (cost=6146.04..6154.39 rows=5 width=46) (actual time=17.481..19.346 rows=5 loops=1)
+         Group Key: method
+         Buffers: shared hit=2864
+         ->  Gather Merge  (cost=6146.04..6154.27 rows=5 width=46) (actual time=17.459..19.326 rows=10 loops=1)
+               Workers Planned: 1
+               Workers Launched: 1
+               Buffers: shared hit=2864
+               ->  Partial GroupAggregate  (cost=5146.03..5153.70 rows=5 width=46) (actual time=15.952..15.991 rows=5 loops=2)
+                     Group Key: method
+                     Buffers: shared hit=2864
+                     ->  Sort  (cost=5146.03..5147.93 rows=761 width=13) (actual time=15.935..15.945 rows=198 loops=2)
+                           Sort Key: method
+                           Sort Method: quicksort  Memory: 34kB
+                           Buffers: shared hit=2864
+                           Worker 0:  Sort Method: quicksort  Memory: 32kB
+                           ->  Parallel Seq Scan on payment  (cost=0.00..5109.61 rows=761 width=13) (actual time=0.116..15.814 rows=198 loops=2)
+                                 Filter: ((paid_at)::date = '2026-06-01'::date)
+                                 Rows Removed by Filter: 129206
+                                 Buffers: shared hit=2826
+ Planning:
+   Buffers: shared hit=183
+ Planning Time: 0.426 ms
+ Execution Time: 19.448 ms
+(27 rows)
+

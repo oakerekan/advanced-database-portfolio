@@ -1,0 +1,25 @@
+-- Q4: Front-desk patient search by name (case-insensitive, prefix on first name)
+-- phase: 1-baseline
+
+SELECT hospital_no, first_name, last_name, date_of_birth, phone
+FROM patient
+WHERE lower(last_name) = lower('Okafor')
+  AND lower(first_name) LIKE 'chi%'
+ORDER BY first_name, date_of_birth;
+
+                                                  QUERY PLAN                                                   
+---------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2250.01..2250.02 rows=2 width=41) (actual time=15.497..15.505 rows=152 loops=1)
+   Sort Key: first_name, date_of_birth
+   Sort Method: quicksort  Memory: 35kB
+   Buffers: shared hit=1056
+   ->  Seq Scan on patient  (cost=0.00..2250.00 rows=2 width=41) (actual time=0.075..15.365 rows=152 loops=1)
+         Filter: ((lower((first_name)::text) ~~ 'chi%'::text) AND (lower((last_name)::text) = 'okafor'::text))
+         Rows Removed by Filter: 59848
+         Buffers: shared hit=1050
+ Planning:
+   Buffers: shared hit=151
+ Planning Time: 0.369 ms
+ Execution Time: 15.529 ms
+(12 rows)
+

@@ -1,0 +1,33 @@
+-- Q6: Management report: monthly revenue billed per branch in 2025
+-- phase: 3-optimised
+
+SELECT b.branch_code, m.month, m.revenue
+FROM monthly_branch_revenue m
+JOIN branch b USING (branch_id)
+WHERE m.month >= '2025-01-01' AND m.month < '2026-01-01'
+ORDER BY b.branch_code, m.month;
+
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.26..4.35 rows=36 width=18) (actual time=0.073..0.076 rows=36 loops=1)
+   Sort Key: b.branch_code, m.month
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=8
+   ->  Hash Join  (cost=1.07..3.33 rows=36 width=18) (actual time=0.025..0.038 rows=36 loops=1)
+         Hash Cond: (m.branch_id = b.branch_id)
+         Buffers: shared hit=2
+         ->  Seq Scan on monthly_branch_revenue m  (cost=0.00..2.04 rows=36 width=16) (actual time=0.007..0.012 rows=36 loops=1)
+               Filter: ((month >= '2025-01-01'::date) AND (month < '2026-01-01'::date))
+               Rows Removed by Filter: 33
+               Buffers: shared hit=1
+         ->  Hash  (cost=1.03..1.03 rows=3 width=6) (actual time=0.008..0.008 rows=3 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on branch b  (cost=0.00..1.03 rows=3 width=6) (actual time=0.003..0.004 rows=3 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=270
+ Planning Time: 0.475 ms
+ Execution Time: 0.127 ms
+(20 rows)
+

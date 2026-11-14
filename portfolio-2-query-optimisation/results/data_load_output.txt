@@ -1,0 +1,91 @@
+SET
+ setseed 
+---------
+ 
+(1 row)
+
+Timing is on.
+INSERT 0 3
+Time: 1.303 ms
+INSERT 0 24
+Time: 1.596 ms
+INSERT 0 450
+Time: 7.569 ms
+INSERT 0 150
+Time: 4.980 ms
+INSERT 0 6
+Time: 0.808 ms
+INSERT 0 60000
+Time: 761.078 ms
+INSERT 0 300000
+Time: 22015.837 ms (00:22.016)
+INSERT 0 255251
+Time: 5309.926 ms (00:05.310)
+INSERT 0 20000
+Time: 330.845 ms
+INSERT 0 357858
+Time: 3174.553 ms (00:03.175)
+INSERT 0 120
+Time: 2.549 ms
+INSERT 0 360
+Time: 4.123 ms
+INSERT 0 165380
+Time: 1056.882 ms (00:01.057)
+INSERT 0 331261
+Time: 3695.662 ms (00:03.696)
+INSERT 0 30
+Time: 1.534 ms
+INSERT 0 165173
+Time: 2103.844 ms (00:02.104)
+INSERT 0 160666
+Time: 1773.143 ms (00:01.773)
+INSERT 0 30
+Time: 1.557 ms
+INSERT 0 600
+Time: 5.166 ms
+INSERT 0 12000
+Time: 387.798 ms
+INSERT 0 275251
+Time: 5074.516 ms (00:05.075)
+INSERT 0 12000
+Time: 223.447 ms
+INSERT 0 275251
+Time: 2297.101 ms (00:02.297)
+INSERT 0 331261
+Time: 3117.997 ms (00:03.118)
+INSERT 0 161970
+Time: 1744.203 ms (00:01.744)
+INSERT 0 12000
+Time: 107.443 ms
+INSERT 0 258809
+Time: 5213.250 ms (00:05.213)
+UPDATE 287251
+Time: 4021.171 ms (00:04.021)
+Timing is off.
+VACUUM
+     table_name     |  rows  
+--------------------+--------
+ invoice_item       | 780482
+ diagnosis          | 357858
+ prescription_item  | 331261
+ appointment        | 300000
+ invoice            | 287251
+ encounter          | 275251
+ payment            | 258809
+ prescription       | 165380
+ lab_request        | 165173
+ lab_result         | 160666
+ patient            |  60000
+ admission          |  12000
+ bed                |    600
+ staff              |    450
+ branch_drug_stock  |    360
+ doctor             |    150
+ drug               |    120
+ lab_test           |     30
+ ward               |     30
+ department         |     24
+ insurance_provider |      6
+ branch             |      3
+(22 rows)
+

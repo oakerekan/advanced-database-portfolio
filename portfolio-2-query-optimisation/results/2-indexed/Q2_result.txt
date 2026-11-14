@@ -1,0 +1,7 @@
+         starts         |  status   | hospital_no |     patient     |     reason      
+------------------------+-----------+-------------+-----------------+-----------------
+ 2026-03-10 09:00:00+01 | completed | LCH-0055919 | Aliyu Chukwu    | Follow-up visit
+ 2026-03-10 13:00:00+01 | completed | LCH-0018872 | Yetunde Akinola | Fever
+ 2026-03-10 15:00:00+01 | completed | LCH-0038876 | Bukola Ogunleye | Skin rash
+(3 rows)
+

@@ -1,0 +1,12 @@
+ visit_date | branch_code |       doctor       |    chief_complaint    |     primary_diagnosis      |                                 drugs                                 
+------------+-------------+--------------------+-----------------------+----------------------------+-----------------------------------------------------------------------
+ 2026-08-12 | YAB         | Aisha Oyelaran     | Fever                 | B54 Malaria, unspecified   | ORS 100 mg, Ciprofloxacin 500 mg
+ 2026-05-31 | YAB         | Adaeze Okafor      | Skin rash             | A01.0 Typhoid fever        | Ibuprofen 100 mg, Ferrous Sulphate 250 mg, Hydrochlorothiazide 500 mg
+ 2026-04-28 | IKJ         | Musa Akinola       | Chest pain            | I10 Essential hypertension | 
+ 2026-04-22 | IKJ         | Temitope Obi       | Bleeding              | A01.0 Typhoid fever        | 
+ 2025-10-10 | LKI         | Temitope Obi       | Back pain             | H66.9 Otitis media         | 
+ 2025-03-12 | YAB         | Chukwuemeka Bakare | Back pain             | M54.5 Low back pain        | 
+ 2025-02-26 | IKJ         | Segun Afolabi      | Fever                 | R51 Headache               | Artemether/Lumefantrine 100 mg, Omeprazole 250 mg
+ 2025-02-04 | IKJ         | Folake Abubakar    | Severe abdominal pain | B54 Malaria, unspecified   | Diclofenac 100 mg, Vitamin C 250 mg, Insulin 500 mg
+(8 rows)
+

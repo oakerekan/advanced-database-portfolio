@@ -1,0 +1,29 @@
+-- Q4: Front-desk patient search by name (case-insensitive, prefix on first name)
+-- phase: 2-indexed
+
+SELECT hospital_no, first_name, last_name, date_of_birth, phone
+FROM patient
+WHERE lower(last_name) = lower('Okafor')
+  AND lower(first_name) LIKE 'chi%'
+ORDER BY first_name, date_of_birth;
+
+                                                                                QUERY PLAN                                                                                
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=418.75..419.12 rows=148 width=41) (actual time=0.489..0.497 rows=152 loops=1)
+   Sort Key: first_name, date_of_birth
+   Sort Method: quicksort  Memory: 35kB
+   Buffers: shared hit=149
+   ->  Bitmap Heap Scan on patient  (cost=6.18..413.41 rows=148 width=41) (actual time=0.040..0.365 rows=152 loops=1)
+         Recheck Cond: (lower((last_name)::text) = 'okafor'::text)
+         Filter: (lower((first_name)::text) ~~ 'chi%'::text)
+         Heap Blocks: exact=141
+         Buffers: shared hit=143
+         ->  Bitmap Index Scan on idx_patient_name_search  (cost=0.00..6.14 rows=148 width=0) (actual time=0.016..0.017 rows=152 loops=1)
+               Index Cond: ((lower((last_name)::text) = 'okafor'::text) AND (lower((first_name)::text) ~>=~ 'chi'::text) AND (lower((first_name)::text) ~<~ 'chj'::text))
+               Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=212
+ Planning Time: 0.525 ms
+ Execution Time: 0.530 ms
+(16 rows)
+

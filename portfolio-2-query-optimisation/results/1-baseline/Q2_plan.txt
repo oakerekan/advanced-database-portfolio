@@ -1,0 +1,36 @@
+-- Q2: One doctor's schedule for a day
+-- phase: 1-baseline
+
+SELECT lower(a.slot) AS starts, a.status, p.hospital_no, p.first_name || ' ' || p.last_name AS patient, a.reason
+FROM appointment a JOIN patient p USING (patient_id)
+WHERE a.doctor_id = 17
+  AND a.slot && tstzrange('2026-03-10 00:00+01', '2026-03-11 00:00+01')
+ORDER BY lower(a.slot);
+
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Gather Merge  (cost=7014.35..7014.58 rows=2 width=75) (actual time=30.532..30.675 rows=3 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=656 read=3555 written=96
+   ->  Sort  (cost=6014.33..6014.33 rows=1 width=75) (actual time=26.449..26.450 rows=1 loops=3)
+         Sort Key: (lower(a.slot))
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=656 read=3555 written=96
+         Worker 0:  Sort Method: quicksort  Memory: 25kB
+         Worker 1:  Sort Method: quicksort  Memory: 25kB
+         ->  Nested Loop  (cost=0.29..6014.32 rows=1 width=75) (actual time=18.679..26.413 rows=1 loops=3)
+               Buffers: shared hit=638 read=3555 written=96
+               ->  Parallel Seq Scan on appointment a  (cost=0.00..6006.00 rows=1 width=53) (actual time=18.670..26.400 rows=1 loops=3)
+                     Filter: ((slot && '["2026-03-10 00:00:00+01","2026-03-11 00:00:00+01")'::tstzrange) AND (doctor_id = 17))
+                     Rows Removed by Filter: 99999
+                     Buffers: shared hit=628 read=3555 written=96
+               ->  Index Scan using patient_pkey on patient p  (cost=0.29..8.31 rows=1 width=33) (actual time=0.009..0.009 rows=1 loops=3)
+                     Index Cond: (patient_id = a.patient_id)
+                     Buffers: shared hit=10
+ Planning:
+   Buffers: shared hit=306
+ Planning Time: 0.682 ms
+ Execution Time: 30.726 ms
+(23 rows)
+
