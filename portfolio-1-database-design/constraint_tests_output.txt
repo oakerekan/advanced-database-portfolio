@@ -1,0 +1,59 @@
+SET
+=== Valid setup data ===
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+=== TEST 1 (SHOULD FAIL): doctor double-booked for an overlapping slot ===
+psql:constraint_tests.sql:42: ERROR:  conflicting key value violates exclusion constraint "no_doctor_double_booking"
+DETAIL:  Key (doctor_id, slot)=(1, ["2026-11-20 09:15:00+01","2026-11-20 09:45:00+01")) conflicts with existing key (doctor_id, slot)=(1, ["2026-11-20 09:00:00+01","2026-11-20 09:30:00+01")).
+=== TEST 1b (SHOULD SUCCEED): adjacent slot 09:30-10:00 does not overlap ===
+INSERT 0 1
+=== TEST 2 (SHOULD FAIL): drug stock going negative ===
+psql:constraint_tests.sql:49: ERROR:  new row for relation "branch_drug_stock" violates check constraint "branch_drug_stock_quantity_check"
+DETAIL:  Failing row contains (1, 1, -5, 20).
+=== TEST 3 (SHOULD FAIL): two patients in the same bed at the same time ===
+INSERT 0 1
+INSERT 0 1
+psql:constraint_tests.sql:57: ERROR:  conflicting key value violates exclusion constraint "no_bed_double_occupancy"
+DETAIL:  Key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-22 08:00:00+01",)) conflicts with existing key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-21 10:00:00+01",)).
+=== TEST 4 (SHOULD FAIL): invalid sex value (CHECK) ===
+psql:constraint_tests.sql:61: ERROR:  new row for relation "patient" violates check constraint "patient_sex_check"
+DETAIL:  Failing row contains (3, LCH-0000003, 1, Test, Patient, 2000-01-01, X, null, 08030000003, null, null, null, null, null, null, 2026-11-14 03:15:31.712519+01).
+=== TEST 5 (SHOULD FAIL): duplicate hospital number (UNIQUE) ===
+psql:constraint_tests.sql:65: ERROR:  duplicate key value violates unique constraint "patient_hospital_no_key"
+DETAIL:  Key (hospital_no)=(LCH-0000001) already exists.
+=== TEST 6 (SHOULD FAIL): appointment with a non-doctor (FOREIGN KEY) ===
+psql:constraint_tests.sql:69: ERROR:  insert or update on table "appointment" violates foreign key constraint "appointment_doctor_id_fkey"
+DETAIL:  Key (doctor_id)=(2) is not present in table "doctor".
+=== TEST 7 (SHOULD FAIL): policy number with no insurance provider ===
+psql:constraint_tests.sql:73: ERROR:  new row for relation "patient" violates check constraint "chk_policy_needs_provider"
+DETAIL:  Failing row contains (5, LCH-0000005, 1, No, Provider, 1990-01-01, M, null, 08030000005, null, null, null, null, null, ABC-1, 2026-11-14 03:15:31.713596+01).
+=== TEST 8 (SHOULD FAIL): two primary diagnoses for one encounter ===
+INSERT 0 1
+INSERT 0 1
+psql:constraint_tests.sql:79: ERROR:  duplicate key value violates unique constraint "uq_one_primary_diagnosis"
+DETAIL:  Key (encounter_id)=(1) already exists.
+=== TEST 9 (SHOULD FAIL): discharge before admission ===
+psql:constraint_tests.sql:82: ERROR:  new row for relation "admission" violates check constraint "chk_discharge_after_admit"
+DETAIL:  Failing row contains (1, 1, 1, 1, null, 2026-11-21 10:00:00+01, 2026-11-20 08:00:00+01, null).
+=== TEST 10 (SHOULD FAIL): insurance payment without a provider ===
+INSERT 0 1
+INSERT 0 2
+psql:constraint_tests.sql:87: ERROR:  new row for relation "payment" violates check constraint "chk_insurance_payment"
+DETAIL:  Failing row contains (1, 1, 5000.00, insurance, null, null, null, 2026-11-14 03:15:31.717756+01).
+=== Derived balance from view (total 18,400; 5,000 cash paid -> 13,400 due) ===
+INSERT 0 1
+   invoice_no   | total_amount | amount_paid | balance_due 
+----------------+--------------+-------------+-------------
+ INV-IKJ-000001 |   18400.0000 |     5000.00 |  13400.0000
+(1 row)
+
