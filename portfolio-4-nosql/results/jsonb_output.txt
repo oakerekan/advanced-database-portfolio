@@ -138,5 +138,5 @@ DETAIL:  Failing row contains (ENC-X, {"_id": "ENC-X", "type": "outpatient", "br
  collection | table_and_indexes | gin_index 
 ------------+-------------------+-----------
  encounters | 28 MB             | 4440 kB
- patients   | 2328 kB           | 
+ patients   | 2272 kB           | 
 

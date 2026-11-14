@@ -1,0 +1,88 @@
+
+============================================================================
+M1. Patient history: all visits of LCH-0000013, newest first (ONE query, no joins)
+============================================================================
+  before index: SORT <- PROJECTION_DEFAULT <- COLLSCAN
+      docsExamined=22765  keysExamined=0  returned=8  time=39 ms
+  after index:  PROJECTION_DEFAULT <- FETCH <- IXSCAN(patient_history)
+      docsExamined=8  keysExamined=8  returned=8  time=14 ms
+  2026-08-12 YAB Dr Aisha Oyelaran        B54 Malaria, unspecified | drugs: Ciprofloxacin, ORS | labs: -
+  2026-05-31 YAB Dr Adaeze Okafor         A01.0 Typhoid fever | drugs: Ferrous Sulphate, Hydrochlorothiazide, Ibuprofen | labs: -
+  2026-04-28 IKJ Dr Musa Akinola          I10 Essential hypertension | drugs: - | labs: -
+  2026-04-22 IKJ Dr Temitope Obi          A01.0 Typhoid fever | drugs: - | labs: -
+  2025-10-10 LKI Dr Temitope Obi          H66.9 Otitis media | drugs: - | labs: -
+  2025-03-12 YAB Dr Chukwuemeka Bakare    M54.5 Low back pain | drugs: - | labs: FBC, UA
+  2025-02-26 IKJ Dr Segun Afolabi         R51 Headache | drugs: Artemether/Lumefantrine, Omeprazole | labs: FBS, HIV
+  2025-02-04 IKJ Dr Folake Abubakar       B54 Malaria, unspecified | drugs: Diclofenac, Insulin, Vitamin C | labs: FBS, HIV
+
+============================================================================
+M2. Front-desk search: surname OKAFOR, first name chinedu (case-insensitive)
+============================================================================
+  before index: PROJECTION_DEFAULT <- COLLSCAN
+      docsExamined=5000  keysExamined=0  returned=4  time=29 ms
+  after index:  PROJECTION_DEFAULT <- FETCH <- IXSCAN(name_ci)
+      docsExamined=4  keysExamined=4  returned=4  time=5 ms
+  LCH-0001950  Chinedu Okafor  born 2008-01-29
+  LCH-0002578  Chinedu Okafor  born 2001-06-05
+  LCH-0002717  Chinedu Okafor  born 1981-01-04
+  LCH-0003102  Chinedu Okafor  born 1973-03-16
+
+============================================================================
+M3. Clinical alert: FBC results with haemoglobin below 8 g/dL (field exists only in FBC results)
+============================================================================
+  before index: PROJECTION_DEFAULT <- SORT <- COLLSCAN
+      docsExamined=22765  keysExamined=0  returned=5  time=82 ms
+  after index:  PROJECTION_DEFAULT <- SORT <- FETCH <- IXSCAN(lab_test_hb)
+      docsExamined=52  keysExamined=52  returned=5  time=8 ms
+  matching encounters: 52 (latest 5 below)
+  LCH-0003335 2026-10-15 YAB  Hb=6.8
+  LCH-0001498 2026-09-17 LKI  Hb=7.3
+  LCH-0000723 2026-09-13 YAB  Hb=7.8
+  LCH-0003905 2026-09-05 LKI  Hb=6.6
+  LCH-0002238 2026-08-30 IKJ  Hb=7.8
+
+============================================================================
+M4. Aggregation: top 3 primary diagnoses per branch in 2025
+============================================================================
+  IKJ: B54 Malaria, unspecified (917); I10 Essential hypertension (386); A01.0 Typhoid fever (317)
+  LKI: B54 Malaria, unspecified (891); I10 Essential hypertension (344); A01.0 Typhoid fever (296)
+  YAB: B54 Malaria, unspecified (923); I10 Essential hypertension (390); A01.0 Typhoid fever (277)
+
+============================================================================
+M5. Safety check ($lookup): patients allergic to Penicillin who were prescribed Amoxicillin
+============================================================================
+  patients at risk: 96 (first 5 below)
+  LCH-0002210  Emeka Ezeh             amoxicillin prescribed in 2 visit(s)
+  LCH-0002310  Nkechi Umar            amoxicillin prescribed in 2 visit(s)
+  LCH-0002410  Aliyu Nnamdi           amoxicillin prescribed in 2 visit(s)
+  LCH-0002730  Bukola Mohammed        amoxicillin prescribed in 2 visit(s)
+  LCH-0004550  Hauwa Okafor           amoxicillin prescribed in 2 visit(s)
+
+============================================================================
+M6. Flexible schema: vital-sign fields differ between documents
+============================================================================
+  encounters with GCS recorded (emergency only): 1710
+  encounters without GCS:                        21055
+  distinct lab tests stored with their own value fields: 31
+
+============================================================================
+M7. Updates: add a new lab result to a visit, and a new field to a patient
+============================================================================
+  $push lab result into ENC-81418: modified=1
+  $set new field emergencyContact (no ALTER TABLE needed): modified=1
+
+============================================================================
+M8. Schema validation rejects bad documents
+============================================================================
+  REJECTED as expected: Document failed validation (sex must be M or F)
+  REJECTED as expected: Document failed validation (branch ABJ does not exist)
+
+============================================================================
+Indexes created
+============================================================================
+  encounters: _id_  {"_id":1}
+  encounters: patient_history  {"patientId":1,"startedAt":-1}
+  encounters: lab_test_hb  {"labResults.test":1,"labResults.values.hb_g_dL":1}
+  encounters: prescribed_drug  {"prescriptions.drug":1}
+  patients:   _id_  {"_id":1}
+  patients:   name_ci  {"name.last":1,"name.first":1}
