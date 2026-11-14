@@ -9,20 +9,20 @@ SET client_min_messages = warning;   -- hide the list of cascaded tables
 TRUNCATE branch, insurance_provider, drug, lab_test RESTART IDENTITY CASCADE;
 
 INSERT INTO branch (branch_code, name, address, phone, opened_on) VALUES
- ('IKJ','Lagoon Care Ikeja','12 Allen Avenue, Ikeja','01-2000001','2015-03-01'),   -- branch 1
- ('LKI','Lagoon Care Lekki','5 Admiralty Way, Lekki Phase 1','01-2000002','2019-07-15'); -- branch 2
+ ('IKJ','Laguna Care Ikeja','12 Allen Avenue, Ikeja','01-2000001','2015-03-01'),   -- branch 1
+ ('LKI','Laguna Care Lekki','5 Admiralty Way, Lekki Phase 1','01-2000002','2019-07-15'); -- branch 2
 
 INSERT INTO department (branch_id, name) VALUES (1,'General Medicine'), (2,'General Medicine');
 
 INSERT INTO staff (staff_no, home_branch_id, department_id, first_name, last_name, role, email, hire_date) VALUES
- ('LC-S-00001',1,1,'Adaeze','Okafor','doctor','okafor@lagooncare.ng','2016-01-10'),          -- 1
- ('LC-S-00002',1,1,'Ibrahim','Bello','doctor','bello@lagooncare.ng','2017-02-01'),           -- 2
- ('LC-S-00003',1,NULL,'Tunde','Bakare','receptionist','bakare@lagooncare.ng','2018-05-02'),  -- 3
- ('LC-S-00004',1,NULL,'Ngozi','Eze','receptionist','eze@lagooncare.ng','2019-03-11'),        -- 4
- ('LC-S-00005',1,NULL,'Halima','Musa','pharmacist','musa@lagooncare.ng','2020-09-14'),       -- 5
- ('LC-S-00006',2,NULL,'Chidi','Obi','pharmacist','obi@lagooncare.ng','2021-01-04'),          -- 6
- ('LC-S-00007',1,NULL,'Kemi','Lawal','billing_officer','lawal@lagooncare.ng','2019-06-20'),  -- 7
- ('LC-S-00008',1,1,'Aisha','Sani','nurse','sani@lagooncare.ng','2020-02-17');                -- 8
+ ('LC-S-00001',1,1,'Adaeze','Okafor','doctor','okafor@lagunacare.ng','2016-01-10'),          -- 1
+ ('LC-S-00002',1,1,'Ibrahim','Bello','doctor','bello@lagunacare.ng','2017-02-01'),           -- 2
+ ('LC-S-00003',1,NULL,'Tunde','Bakare','receptionist','bakare@lagunacare.ng','2018-05-02'),  -- 3
+ ('LC-S-00004',1,NULL,'Ngozi','Eze','receptionist','eze@lagunacare.ng','2019-03-11'),        -- 4
+ ('LC-S-00005',1,NULL,'Halima','Musa','pharmacist','musa@lagunacare.ng','2020-09-14'),       -- 5
+ ('LC-S-00006',2,NULL,'Chidi','Obi','pharmacist','obi@lagunacare.ng','2021-01-04'),          -- 6
+ ('LC-S-00007',1,NULL,'Kemi','Lawal','billing_officer','lawal@lagunacare.ng','2019-06-20'),  -- 7
+ ('LC-S-00008',1,1,'Aisha','Sani','nurse','sani@lagunacare.ng','2020-02-17');                -- 8
 
 INSERT INTO doctor (staff_id, specialty, mdcn_licence_no) VALUES
  (1,'Internal Medicine','MDCN/R/45123'), (2,'Internal Medicine','MDCN/R/47788');

@@ -10,36 +10,36 @@ WHERE lr.status = 'requested'
 ORDER BY lr.requested_at, lr.request_id
 LIMIT 50;
 
-                                                                     QUERY PLAN                                                                      
------------------------------------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=4161.98..4579.28 rows=50 width=29) (actual time=9.772..11.541 rows=50 loops=1)
-   Buffers: shared hit=2051
-   ->  Nested Loop  (cost=4161.98..5472.29 rows=157 width=29) (actual time=9.771..11.535 rows=50 loops=1)
-         Buffers: shared hit=2051
-         ->  Nested Loop  (cost=4161.56..4215.21 rows=157 width=35) (actual time=9.707..11.319 rows=50 loops=1)
-               Buffers: shared hit=1851
-               ->  Gather Merge  (cost=4161.42..4179.31 rows=157 width=35) (actual time=9.694..11.262 rows=50 loops=1)
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=4161.82..4580.82 rows=50 width=29) (actual time=35.078..39.960 rows=50 loops=1)
+   Buffers: shared hit=2048
+   ->  Nested Loop  (cost=4161.82..5410.44 rows=149 width=29) (actual time=35.077..39.951 rows=50 loops=1)
+         Buffers: shared hit=2048
+         ->  Nested Loop  (cost=4161.40..4212.88 rows=149 width=35) (actual time=35.038..39.278 rows=50 loops=1)
+               Buffers: shared hit=1848
+               ->  Gather Merge  (cost=4161.26..4178.24 rows=149 width=35) (actual time=34.997..39.182 rows=50 loops=1)
                      Workers Planned: 1
                      Workers Launched: 1
-                     Buffers: shared hit=1751
-                     ->  Sort  (cost=3161.41..3161.64 rows=92 width=35) (actual time=8.345..8.349 rows=56 loops=2)
+                     Buffers: shared hit=1748
+                     ->  Sort  (cost=3161.25..3161.47 rows=88 width=35) (actual time=12.159..12.164 rows=25 loops=2)
                            Sort Key: lr.requested_at, lr.request_id
-                           Sort Method: quicksort  Memory: 31kB
-                           Buffers: shared hit=1751
-                           Worker 0:  Sort Method: quicksort  Memory: 30kB
-                           ->  Parallel Seq Scan on lab_request lr  (cost=0.00..3158.41 rows=92 width=35) (actual time=0.620..8.279 rows=94 loops=2)
+                           Sort Method: quicksort  Memory: 39kB
+                           Buffers: shared hit=1748
+                           Worker 0:  Sort Method: quicksort  Memory: 25kB
+                           ->  Parallel Seq Scan on lab_request lr  (cost=0.00..3158.41 rows=88 width=35) (actual time=0.515..12.037 rows=94 loops=2)
                                  Filter: (((priority)::text = ANY ('{urgent,stat}'::text[])) AND ((status)::text = 'requested'::text))
                                  Rows Removed by Filter: 82492
-                                 Buffers: shared hit=1704
-               ->  Index Scan using lab_test_pkey on lab_test t  (cost=0.14..0.23 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=50)
+                                 Buffers: shared hit=1701
+               ->  Index Scan using lab_test_pkey on lab_test t  (cost=0.14..0.24 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=50)
                      Index Cond: (test_id = lr.test_id)
                      Buffers: shared hit=100
-         ->  Index Scan using encounter_pkey on encounter e  (cost=0.42..8.01 rows=1 width=10) (actual time=0.004..0.004 rows=1 loops=50)
+         ->  Index Scan using encounter_pkey on encounter e  (cost=0.42..8.04 rows=1 width=10) (actual time=0.012..0.012 rows=1 loops=50)
                Index Cond: (encounter_id = lr.encounter_id)
                Buffers: shared hit=200
  Planning:
    Buffers: shared hit=382
- Planning Time: 1.163 ms
- Execution Time: 15.115 ms
+ Planning Time: 1.527 ms
+ Execution Time: 40.041 ms
 (29 rows)
 

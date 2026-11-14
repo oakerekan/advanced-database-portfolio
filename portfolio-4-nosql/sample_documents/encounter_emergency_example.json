@@ -1,0 +1,63 @@
+{
+    "_id": "ENC-255299",
+    "type": "emergency",
+    "branch": "YAB",
+    "doctor": {
+        "name": "Dr Tunde Adebayo",
+        "staffId": 1,
+        "specialty": "Internal Medicine"
+    },
+    "vitals": {
+        "bp": {
+            "systolic": 162,
+            "diastolic": 70
+        },
+        "gcs": 14,
+        "pulse": 66,
+        "tempC": 38.5,
+        "spo2_pct": 92
+    },
+    "complaint": "Bleeding",
+    "diagnoses": [
+        {
+            "code": "B54",
+            "primary": true,
+            "description": "Malaria, unspecified"
+        }
+    ],
+    "patientId": "LCH-0000752",
+    "startedAt": "2025-09-29T20:40:51Z",
+    "labResults": [
+        {
+            "name": "Sputum M/C/S",
+            "test": "SMCS",
+            "status": "completed",
+            "values": {
+                "summary": "Abnormal - see detailed report"
+            },
+            "abnormal": true,
+            "priority": "urgent",
+            "resultAt": "2025-09-30T20:52:23Z"
+        }
+    ],
+    "prescriptions": [
+        {
+            "days": 30,
+            "dose": "5 ml",
+            "drug": "Ceftriaxone",
+            "form": "injection",
+            "quantity": 60,
+            "strength": "250 mg",
+            "frequency": "8-hourly"
+        },
+        {
+            "days": 30,
+            "dose": "5 ml",
+            "drug": "Metformin",
+            "form": "tablet",
+            "quantity": 60,
+            "strength": "100 mg",
+            "frequency": "12-hourly"
+        }
+    ]
+}

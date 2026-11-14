@@ -1,6 +1,6 @@
 # Portfolio 3: Transactions and Concurrency
 
-**Case study:** Lagoon Care Specialist Hospital
+**Case study:** Laguna Care Specialist Hospital
 **DBMS:** PostgreSQL 15, using the schema from Portfolio 1
 
 ## 1. Aim

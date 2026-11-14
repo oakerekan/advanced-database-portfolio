@@ -4,19 +4,21 @@
 # Set PGHOST / PGUSER / PGPASSWORD for your server first if needed.
 set -euo pipefail
 cd "$(dirname "$0")"
-export PGDATABASE=lagoon_care
+export PGDATABASE=laguna_care
 mkdir -p results
+# Windows usually names Python 'python'; macOS/Linux use 'python3'
+PY=$(command -v python3 >/dev/null 2>&1 && python3 -c 1 >/dev/null 2>&1 && echo python3 || echo python)
 
-dropdb --if-exists lagoon_care
-createdb lagoon_care
+dropdb --if-exists laguna_care
+createdb laguna_care
 psql -X -q -f ../portfolio-1-database-design/schema.sql
 psql -X -f generate_data.sql > results/data_load_output.txt
 
-python3 run_benchmark.py 1-baseline  queries.sql            # no extra indexes
+$PY run_benchmark.py 1-baseline  queries.sql            # no extra indexes
 psql -X -q -f optimisations.sql                             # add indexes + materialized view
-python3 run_benchmark.py 2-indexed   queries.sql            # same SQL, new indexes
-python3 run_benchmark.py 3-optimised queries_optimised.sql  # rewritten Q2, Q5, Q6, Q7
-python3 run_benchmark.py --compare
+$PY run_benchmark.py 2-indexed   queries.sql            # same SQL, new indexes
+$PY run_benchmark.py 3-optimised queries_optimised.sql  # rewritten Q2, Q5, Q6, Q7
+$PY run_benchmark.py --compare
 
 # Size of each new index vs. its table
 psql -X -c "SELECT indexrelname AS index, relname AS table,

@@ -12,36 +12,36 @@ ORDER BY lower(a.slot), s.last_name, a.appointment_id;
 
                                                                                              QUERY PLAN                                                                                             
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Gather Merge  (cost=8989.63..9038.63 rows=420 width=49) (actual time=22.809..23.053 rows=151 loops=1)
+ Gather Merge  (cost=8986.62..9035.39 rows=418 width=49) (actual time=49.660..56.157 rows=151 loops=1)
    Workers Planned: 2
    Workers Launched: 2
-   Buffers: shared hit=1929 read=2883 written=96
-   ->  Sort  (cost=7989.60..7990.13 rows=210 width=49) (actual time=18.296..18.301 rows=50 loops=3)
+   Buffers: shared hit=4816
+   ->  Sort  (cost=7986.59..7987.11 rows=209 width=49) (actual time=19.804..19.810 rows=50 loops=3)
          Sort Key: (lower(a.slot)), s.last_name, a.appointment_id
-         Sort Method: quicksort  Memory: 30kB
-         Buffers: shared hit=1929 read=2883 written=96
-         Worker 0:  Sort Method: quicksort  Memory: 26kB
-         Worker 1:  Sort Method: quicksort  Memory: 29kB
-         ->  Hash Join  (cost=17.41..7981.51 rows=210 width=49) (actual time=0.958..18.198 rows=50 loops=3)
+         Sort Method: quicksort  Memory: 37kB
+         Buffers: shared hit=4816
+         Worker 0:  Sort Method: quicksort  Memory: 25kB
+         Worker 1:  Sort Method: quicksort  Memory: 25kB
+         ->  Hash Join  (cost=17.41..7978.54 rows=209 width=49) (actual time=1.176..19.573 rows=50 loops=3)
                Hash Cond: (a.doctor_id = s.staff_id)
-               Buffers: shared hit=1875 read=2883 written=96
-               ->  Nested Loop  (cost=0.29..7963.30 rows=210 width=61) (actual time=0.725..17.931 rows=50 loops=3)
-                     Buffers: shared hit=1758 read=2883 written=96
-                     ->  Parallel Seq Scan on appointment a  (cost=0.00..6943.50 rows=210 width=51) (actual time=0.706..17.553 rows=50 loops=3)
+               Buffers: shared hit=4756
+               ->  Nested Loop  (cost=0.29..7960.34 rows=209 width=61) (actual time=0.774..19.127 rows=50 loops=3)
+                     Buffers: shared hit=4639
+                     ->  Parallel Seq Scan on appointment a  (cost=0.00..6943.50 rows=209 width=51) (actual time=0.733..18.449 rows=50 loops=3)
                            Filter: ((branch_id = 2) AND (lower(slot) >= '2026-03-10 00:00:00+01'::timestamp with time zone) AND (lower(slot) < '2026-03-11 00:00:00+01'::timestamp with time zone))
                            Rows Removed by Filter: 99950
-                           Buffers: shared hit=1303 read=2883 written=96
-                     ->  Index Scan using patient_pkey on patient p  (cost=0.29..4.86 rows=1 width=26) (actual time=0.007..0.007 rows=1 loops=151)
+                           Buffers: shared hit=4184
+                     ->  Index Scan using patient_pkey on patient p  (cost=0.29..4.87 rows=1 width=26) (actual time=0.012..0.012 rows=1 loops=151)
                            Index Cond: (patient_id = a.patient_id)
                            Buffers: shared hit=455
-               ->  Hash  (cost=11.50..11.50 rows=450 width=10) (actual time=0.156..0.157 rows=450 loops=3)
+               ->  Hash  (cost=11.50..11.50 rows=450 width=10) (actual time=0.234..0.235 rows=450 loops=3)
                      Buckets: 1024  Batches: 1  Memory Usage: 28kB
                      Buffers: shared hit=21
-                     ->  Seq Scan on staff s  (cost=0.00..11.50 rows=450 width=10) (actual time=0.020..0.078 rows=450 loops=3)
+                     ->  Seq Scan on staff s  (cost=0.00..11.50 rows=450 width=10) (actual time=0.062..0.163 rows=450 loops=3)
                            Buffers: shared hit=21
  Planning:
-   Buffers: shared hit=380
- Planning Time: 0.766 ms
- Execution Time: 23.140 ms
+   Buffers: shared hit=382
+ Planning Time: 1.537 ms
+ Execution Time: 56.350 ms
 (31 rows)
 

@@ -7,12 +7,12 @@ Session B: Pharmacist Obi (dispenses 4 Coartem) (starts at +0.5s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.08s  A | read Coartem stock = 10; will dispense 3
-+ 0.57s  B |                               read Coartem stock = 10; will dispense 4
-+ 1.59s  A | UPDATE stock = 7
-+ 1.60s  A | COMMIT
-+ 2.07s  B |                               UPDATE stock = 6
-+ 2.08s  B |                               COMMIT
++ 0.03s  A | read Coartem stock = 10; will dispense 3
++ 0.53s  B |                               read Coartem stock = 10; will dispense 4
++ 1.53s  A | UPDATE stock = 7
++ 1.53s  A | COMMIT
++ 2.03s  B |                               UPDATE stock = 6
++ 2.04s  B |                               COMMIT
 ------------------------------------------------------------------------------
 
 Final state (check script):

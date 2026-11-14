@@ -1,0 +1,78 @@
+=== Clean up keys from any previous run (only this demo's keys) ===
+0
+=== 1. Live clinic queue (sorted set, score = arrival time as Unix seconds) ===
+4
+LCH-0000013
+1763107200
+LCH-0000049
+1763107260
+LCH-0000076
+1763107330
+LCH-0001950
+1763107400
+Position of LCH-0000076 in the queue (0 = next):
+2
+Doctor calls the next patient - ZPOPMIN removes and returns them in ONE atomic step:
+LCH-0000013
+1763107200
+Patients still waiting:
+3
+=== 2. Free ICU beds (set) - atomic allocation, no two nurses get the same bed ===
+3
+ICU-03
+ICU-02
+Free beds left:
+1
+Patient discharged - bed ICU-02 returned:
+1
+ICU-02
+ICU-01
+=== 3. Cache a patient summary for 300 s (key-value with expiry) ===
+OK
+{"name":"Yetunde Akinola","bloodGroup":"O+","allergies":[],"lastVisit":"2026-08-12"}
+300
+=== 4. Real-time dashboard counters (hash + atomic increment) ===
+1
+2
+3
+1
+25000.5
+visits
+3
+emergencies
+1
+takings_naira
+25000.5
+=== 5. Doctor status board (hash) ===
+4
+0
+name
+Dr Musa Akinola
+status
+available
+room
+4
+branch
+IKJ
+=== 6. Lab result notifications (stream) - the ward reads new results as they arrive ===
+1794626578042-0
+1794626578042-1
+2
+1794626578042-0
+encounter
+ENC-81418
+patient
+LCH-0000013
+test
+MP
+result
+positive
+1794626578042-1
+encounter
+ENC-255299
+patient
+LCH-0000752
+test
+SMCS
+result
+abnormal

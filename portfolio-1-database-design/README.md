@@ -1,13 +1,13 @@
 # Portfolio 1: Database Design and Modelling
 
-**Case study:** Lagoon Care Specialist Hospital (simulated multi-branch private hospital, Lagos)
-**DBMS:** PostgreSQL 16
+**Case study:** Laguna Care Specialist Hospital (simulated multi-branch private hospital, Lagos)
+**DBMS:** PostgreSQL 15 (also tested on 16)
 
 ## 1. Case study statement
 
 | Item | Description |
 |---|---|
-| **Organisation** | Lagoon Care Specialist Hospital, a simulated private hospital group with branches in Ikeja, Lekki and Yaba, Lagos. |
+| **Organisation** | Laguna Care Specialist Hospital, a simulated private hospital group with branches in Ikeja, Lekki and Yaba, Lagos. |
 | **Nature of the system** | An integrated hospital information system covering outpatient clinics, emergency, inpatient wards, laboratory, pharmacy and billing, including HMO/NHIA insurance. Patients may attend any branch using one hospital number. |
 | **Database users** | Receptionists, doctors, nurses, lab scientists, pharmacists, billing officers and administrators. |
 | **Major data stored** | Branches, departments, staff and doctors, patients, insurance providers, appointments, encounters (consultations), diagnoses, drugs and branch stock, prescriptions, lab tests, requests and results, wards, beds, admissions, invoices and payments. |
@@ -25,9 +25,9 @@
 **How to run**
 
 ```bash
-createdb lagoon_care
-psql -d lagoon_care -f schema.sql
-psql -d lagoon_care -f constraint_tests.sql
+createdb laguna_care
+psql -d laguna_care -f schema.sql
+psql -d laguna_care -f constraint_tests.sql
 ```
 
 ## 3. ER diagram

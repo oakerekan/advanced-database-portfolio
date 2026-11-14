@@ -9,56 +9,52 @@ ORDER BY invoice_no;
 
                                                                              QUERY PLAN                                                                              
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=111358.64..111358.64 rows=2 width=109) (actual time=764.858..765.051 rows=2 loops=1)
+ Sort  (cost=111329.05..111329.06 rows=2 width=109) (actual time=814.293..814.358 rows=1 loops=1)
    Sort Key: i.invoice_no
    Sort Method: quicksort  Memory: 25kB
-   Buffers: shared hit=533496 read=6224, temp read=1043 written=2813
+   Buffers: shared hit=539768, temp read=1052 written=2248
    InitPlan 1 (returns $0)
-     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.018..0.020 rows=1 loops=1)
+     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.028..0.028 rows=1 loops=1)
            Index Cond: ((hospital_no)::text = 'LCH-0000013'::text)
            Buffers: shared hit=3
-   ->  Merge Right Join  (cost=40065.34..111350.32 rows=2 width=109) (actual time=440.491..764.997 rows=2 loops=1)
+   ->  Merge Right Join  (cost=40066.34..111320.74 rows=2 width=109) (actual time=483.985..814.325 rows=1 loops=1)
          Merge Cond: (invoice_item.invoice_id = i.invoice_id)
          Filter: ((COALESCE((sum((invoice_item.quantity * invoice_item.unit_price))), '0'::numeric) - COALESCE((sum(payment.amount)), '0'::numeric)) > '0'::numeric)
-         Rows Removed by Filter: 6
-         Buffers: shared hit=533493 read=6224, temp read=1043 written=2813
-         ->  GroupAggregate  (cost=0.42..68481.40 rows=224312 width=40) (actual time=15.360..464.737 rows=270230 loops=1)
+         Rows Removed by Filter: 7
+         Buffers: shared hit=539762, temp read=1052 written=2248
+         ->  GroupAggregate  (cost=0.42..68463.60 rows=223289 width=40) (actual time=0.077..462.224 rows=270230 loops=1)
                Group Key: invoice_item.invoice_id
-               Buffers: shared hit=530344
-               ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..59823.88 rows=780482 width=18) (actual time=0.014..170.299 rows=754288 loops=1)
-                     Buffers: shared hit=530344
-         ->  Sort  (cost=40064.91..40064.93 rows=6 width=53) (actual time=283.535..283.732 rows=8 loops=1)
+               Buffers: shared hit=530388
+               ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..59818.87 rows=780482 width=18) (actual time=0.033..185.148 rows=754288 loops=1)
+                     Buffers: shared hit=530388
+         ->  Sort  (cost=40065.91..40065.93 rows=6 width=53) (actual time=338.401..338.470 rows=8 loops=1)
                Sort Key: i.invoice_id
                Sort Method: quicksort  Memory: 25kB
-               Buffers: shared hit=3149 read=6224, temp read=1043 written=2813
-               ->  Hash Right Join  (cost=31034.82..40064.83 rows=6 width=53) (actual time=155.884..283.703 rows=8 loops=1)
+               Buffers: shared hit=9374, temp read=1052 written=2248
+               ->  Hash Right Join  (cost=31035.82..40065.83 rows=6 width=53) (actual time=191.767..338.424 rows=8 loops=1)
                      Hash Cond: (payment.invoice_id = i.invoice_id)
-                     Buffers: shared hit=3149 read=6224, temp read=1043 written=2813
-                     ->  HashAggregate  (cost=21994.04..27756.59 rows=258809 width=40) (actual time=100.393..232.287 rows=258809 loops=1)
+                     Buffers: shared hit=9374, temp read=1052 written=2248
+                     ->  HashAggregate  (cost=21995.04..27757.59 rows=258809 width=40) (actual time=141.502..278.427 rows=258809 loops=1)
                            Group Key: payment.invoice_id
-                           Planned Partitions: 16  Batches: 17  Memory Usage: 8337kB  Disk Usage: 14912kB
-                           Buffers: shared hit=2826, temp read=1043 written=2813
-                           ->  Seq Scan on payment  (cost=0.00..5414.09 rows=258809 width=15) (actual time=0.010..18.106 rows=258809 loops=1)
-                                 Buffers: shared hit=2826
-                     ->  Hash  (cost=9040.70..9040.70 rows=6 width=21) (actual time=34.410..34.597 rows=8 loops=1)
+                           Planned Partitions: 16  Batches: 17  Memory Usage: 8337kB  Disk Usage: 13936kB
+                           Buffers: shared hit=2827, temp read=1052 written=2248
+                           ->  Seq Scan on payment  (cost=0.00..5415.09 rows=258809 width=15) (actual time=0.023..17.741 rows=258809 loops=1)
+                                 Buffers: shared hit=2827
+                     ->  Hash  (cost=9040.70..9040.70 rows=6 width=21) (actual time=45.984..46.046 rows=8 loops=1)
                            Buckets: 1024  Batches: 1  Memory Usage: 9kB
-                           Buffers: shared hit=323 read=6224
-                           ->  Gather  (cost=1000.00..9040.70 rows=6 width=21) (actual time=8.111..34.582 rows=8 loops=1)
+                           Buffers: shared hit=6547
+                           ->  Gather  (cost=1000.00..9040.70 rows=6 width=21) (actual time=10.738..46.011 rows=8 loops=1)
                                  Workers Planned: 2
                                  Params Evaluated: $0
                                  Workers Launched: 2
-                                 Buffers: shared hit=323 read=6224
-                                 ->  Parallel Seq Scan on invoice i  (cost=0.00..8040.10 rows=2 width=21) (actual time=2.583..7.709 rows=3 loops=3)
+                                 Buffers: shared hit=6547
+                                 ->  Parallel Seq Scan on invoice i  (cost=0.00..8040.10 rows=2 width=21) (actual time=3.575..12.763 rows=3 loops=3)
                                        Filter: (patient_id = $0)
                                        Rows Removed by Filter: 95748
-                                       Buffers: shared hit=320 read=6224
+                                       Buffers: shared hit=6544
  Planning:
    Buffers: shared hit=375
- Planning Time: 1.073 ms
- JIT:
-   Functions: 52
-   Options: Inlining false, Optimization false, Expressions true, Deforming true
-   Timing: Generation 2.324 ms, Inlining 0.000 ms, Optimization 0.904 ms, Emission 19.209 ms, Total 22.437 ms
- Execution Time: 781.470 ms
-(51 rows)
+ Planning Time: 1.456 ms
+ Execution Time: 817.066 ms
+(47 rows)
 

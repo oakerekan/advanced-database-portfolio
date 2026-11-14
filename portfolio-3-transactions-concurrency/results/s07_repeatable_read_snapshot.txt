@@ -7,11 +7,11 @@ Session B: Cashier (posts a payment) (starts at +0.5s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.07s  A | read 1: takings today = 10000.00
-+ 0.62s  B |                               posted and COMMITTED a 20,000 payment
-+ 1.59s  A | read 2: takings today = 10000.00
-+ 1.59s  A | COMMIT
-+ 1.59s  A | read 3 (new transaction): takings today = 30000.00
++ 0.03s  A | read 1: takings today = 10000.00
++ 0.53s  B |                               posted and COMMITTED a 20,000 payment
++ 1.53s  A | read 2: takings today = 10000.00
++ 1.53s  A | COMMIT
++ 1.53s  A | read 3 (new transaction): takings today = 30000.00
 ------------------------------------------------------------------------------
 
 Final state (check script):

@@ -2,7 +2,7 @@
 -- MIT 8103 - Portfolio 3, Part A: single-session transactions
 -- COMMIT, automatic ROLLBACK on error (atomicity), explicit ROLLBACK,
 -- and SAVEPOINT for partial rollback.
--- Run: psql -d lagoon_p3 -f seed.sql && psql -d lagoon_p3 -f 01_transactions.sql
+-- Run: psql -d laguna_p3 -f seed.sql && psql -d laguna_p3 -f 01_transactions.sql
 -- =====================================================================
 SET search_path TO hospital;
 \pset footer off

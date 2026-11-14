@@ -1,0 +1,66 @@
+{
+    "_id": "ENC-100488",
+    "type": "outpatient",
+    "branch": "YAB",
+    "doctor": {
+        "name": "Dr Adaeze Okafor",
+        "staffId": 60,
+        "specialty": "Surgery"
+    },
+    "vitals": {
+        "bp": {
+            "systolic": 164,
+            "diastolic": 71
+        },
+        "pulse": 68,
+        "tempC": 38.6
+    },
+    "complaint": "Routine check-up",
+    "diagnoses": [
+        {
+            "code": "A01.0",
+            "primary": true,
+            "description": "Typhoid fever"
+        }
+    ],
+    "patientId": "LCH-0001812",
+    "startedAt": "2025-03-06T10:05:00Z",
+    "labResults": [
+        {
+            "name": "Full Blood Count",
+            "test": "FBC",
+            "status": "completed",
+            "values": {
+                "hb_g_dL": 13.9,
+                "pcv_pct": 43,
+                "wbc_10e9_L": 10.2,
+                "platelets_10e9_L": 223
+            },
+            "abnormal": false,
+            "priority": "routine",
+            "resultAt": "2025-03-07T07:46:27Z"
+        },
+        {
+            "name": "Urinalysis",
+            "test": "UA",
+            "status": "completed",
+            "values": {
+                "summary": "Abnormal - see detailed report"
+            },
+            "abnormal": true,
+            "priority": "routine",
+            "resultAt": "2025-03-06T11:38:07Z"
+        }
+    ],
+    "prescriptions": [
+        {
+            "days": 30,
+            "dose": "5 ml",
+            "drug": "Metformin",
+            "form": "tablet",
+            "quantity": 60,
+            "strength": "500 mg",
+            "frequency": "12-hourly"
+        }
+    ]
+}

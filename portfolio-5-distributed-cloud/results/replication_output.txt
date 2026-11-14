@@ -1,0 +1,78 @@
+
+==================== 1. Create the primary (port 5433) ====================
+primary running; hospital schema + seed data loaded
+
+==================== 2. Clone two standbys with pg_basebackup (physical copy + WAL streaming) ====================
+replica1 running on port 5434
+replica2 running on port 5435
+synchronous_standby_names = 'replica1' (every commit must be confirmed by replica1)
+
+==================== 3. Replication status, seen from the primary ====================
+ application_name |   state   | sync_state | sent_lsn  | replay_lsn 
+------------------+-----------+------------+-----------+------------
+ replica1         | streaming | sync       | 0/4000000 | 0/4000000
+ replica2         | streaming | async      | 0/4000000 | 0/4000000
+(2 rows)
+
+port 5433 in recovery (read-only standby)? f
+port 5434 in recovery (read-only standby)? t
+port 5435 in recovery (read-only standby)? t
+
+==================== 4. Write on the primary, read the same row on both standbys ====================
+inserted LCH-0005001 on the primary
+port 5434 sees: LCH-0005001 Tolu Adeyemi
+port 5435 sees: LCH-0005001 Tolu Adeyemi
+
+==================== 5. Standbys are read-only ====================
+ERROR:  cannot execute INSERT in a read-only transaction
+-> write on replica1 rejected, as expected
+
+==================== 6. Consistency vs availability: the synchronous standby goes down ====================
+replica1 stopped. A receptionist registers a patient on the primary (in the background)...
+3 seconds later the client is still waiting. What is it waiting for?
+ pid | state  | wait_event_type | wait_event |                     query                     
+-----+--------+-----------------+------------+-----------------------------------------------
+ 471 | active | IPC             | SyncRep    | INSERT INTO hospital.patient (hospital_no, ho
+(1 row)
+
+The receptionist gives up (simulated with pg_cancel_backend):
+WARNING:  canceling wait for synchronous replication due to user request
+DETAIL:  The transaction has already committed locally, but might not have been replicated to the standby.
+INSERT 0 1
+receptionist's client returned
+Is LCH-0005003 on the primary? 1 row(s)
+-> PostgreSQL chose CONSISTENCY over AVAILABILITY: it would not report success until the synchronous
+   standby confirmed. When cancelled, the row is committed locally but was NOT confirmed as replicated.
+
+Switch to QUORUM commit: any 1 of (replica1, replica2) may confirm
+SET
+INSERT 0 1
+-> committed immediately: replica2 confirmed it although replica1 is down
+ application_name |   state   | sync_state 
+------------------+-----------+------------
+ replica2         | streaming | quorum
+(1 row)
+
+
+Restart replica1: it catches up automatically from its replication slot
+replica1 now has 2 of the 2 rows written while it was down
+
+==================== 7. Failover: the primary crashes, replica1 is promoted ====================
+appointment committed on the primary (confirmed by synchronous replica1)
+primary killed (pg_ctl stop -m immediate = simulated crash)
+psql: error: connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused
+replica1 promoted
+replica1 (port 5434) in recovery? f  -> it is now the primary
+appointment booked just before the crash present on the new primary? 1 row(s) -> no data lost
+new write accepted on the new primary (LCH-0005005)
+
+Re-point replica2 at the new primary
+ application_name |   state   | sync_state 
+------------------+-----------+------------
+ replica2         | streaming | async
+(1 row)
+
+replica2 sees the post-failover patient? 1 row(s)
+timeline: new primary writes WAL file 000000020000000000000004 (first 8 hex digits = timeline; the promotion started timeline 2)
+
+==================== Done. Nodes are left running; stop them with ./03_stop_all.sh ====================

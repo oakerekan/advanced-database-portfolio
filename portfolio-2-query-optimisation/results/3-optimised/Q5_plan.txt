@@ -10,24 +10,24 @@ ORDER BY total DESC;
 
                                                                               QUERY PLAN                                                                              
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=1097.43..1097.44 rows=5 width=46) (actual time=0.955..0.956 rows=5 loops=1)
+ Sort  (cost=1092.68..1092.70 rows=5 width=46) (actual time=2.819..2.821 rows=5 loops=1)
    Sort Key: (sum(amount)) DESC
    Sort Method: quicksort  Memory: 25kB
-   Buffers: shared hit=303
-   ->  HashAggregate  (cost=1097.31..1097.37 rows=5 width=46) (actual time=0.917..0.919 rows=5 loops=1)
+   Buffers: shared hit=414
+   ->  HashAggregate  (cost=1092.56..1092.62 rows=5 width=46) (actual time=2.771..2.775 rows=5 loops=1)
          Group Key: method
          Batches: 1  Memory Usage: 24kB
-         Buffers: shared hit=300
-         ->  Bitmap Heap Scan on payment  (cost=12.46..1094.35 rows=394 width=13) (actual time=0.085..0.803 rows=396 loops=1)
+         Buffers: shared hit=411
+         ->  Bitmap Heap Scan on payment  (cost=12.44..1089.62 rows=392 width=13) (actual time=0.140..2.491 rows=429 loops=1)
                Recheck Cond: ((paid_at >= '2026-06-01 00:00:00+01'::timestamp with time zone) AND (paid_at < '2026-06-02 00:00:00+01'::timestamp with time zone))
-               Heap Blocks: exact=296
-               Buffers: shared hit=300
-               ->  Bitmap Index Scan on idx_payment_paid_at  (cost=0.00..12.36 rows=394 width=0) (actual time=0.049..0.049 rows=396 loops=1)
+               Heap Blocks: exact=407
+               Buffers: shared hit=411
+               ->  Bitmap Index Scan on idx_payment_paid_at  (cost=0.00..12.34 rows=392 width=0) (actual time=0.090..0.090 rows=429 loops=1)
                      Index Cond: ((paid_at >= '2026-06-01 00:00:00+01'::timestamp with time zone) AND (paid_at < '2026-06-02 00:00:00+01'::timestamp with time zone))
                      Buffers: shared hit=4
  Planning:
    Buffers: shared hit=191
- Planning Time: 0.405 ms
- Execution Time: 1.024 ms
+ Planning Time: 1.007 ms
+ Execution Time: 3.049 ms
 (19 rows)
 

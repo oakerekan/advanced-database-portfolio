@@ -4,12 +4,12 @@
 # Set PGHOST / PGUSER / PGPASSWORD first if needed. Takes about 30 seconds.
 set -euo pipefail
 cd "$(dirname "$0")"
-export PGDATABASE=lagoon_p3
+export PGDATABASE=laguna_p3
 mkdir -p results
 PY=$(command -v python3 >/dev/null 2>&1 && python3 -c 1 >/dev/null 2>&1 && echo python3 || echo python)
 
-dropdb --if-exists lagoon_p3
-createdb lagoon_p3
+dropdb --if-exists laguna_p3
+createdb laguna_p3
 psql -X -q -f ../portfolio-1-database-design/schema.sql 2>/dev/null
 psql -X -q -f setup.sql
 

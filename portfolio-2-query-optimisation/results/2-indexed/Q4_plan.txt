@@ -9,21 +9,21 @@ ORDER BY first_name, date_of_birth;
 
                                                                                 QUERY PLAN                                                                                
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=418.75..419.12 rows=148 width=41) (actual time=0.489..0.497 rows=152 loops=1)
+ Sort  (cost=430.95..431.33 rows=154 width=41) (actual time=0.901..0.907 rows=152 loops=1)
    Sort Key: first_name, date_of_birth
-   Sort Method: quicksort  Memory: 35kB
-   Buffers: shared hit=149
-   ->  Bitmap Heap Scan on patient  (cost=6.18..413.41 rows=148 width=41) (actual time=0.040..0.365 rows=152 loops=1)
+   Sort Method: quicksort  Memory: 38kB
+   Buffers: shared hit=152
+   ->  Bitmap Heap Scan on patient  (cost=6.25..425.35 rows=154 width=41) (actual time=0.060..0.676 rows=152 loops=1)
          Recheck Cond: (lower((last_name)::text) = 'okafor'::text)
          Filter: (lower((first_name)::text) ~~ 'chi%'::text)
          Heap Blocks: exact=141
          Buffers: shared hit=143
-         ->  Bitmap Index Scan on idx_patient_name_search  (cost=0.00..6.14 rows=148 width=0) (actual time=0.016..0.017 rows=152 loops=1)
+         ->  Bitmap Index Scan on idx_patient_name_search  (cost=0.00..6.21 rows=154 width=0) (actual time=0.034..0.034 rows=152 loops=1)
                Index Cond: ((lower((last_name)::text) = 'okafor'::text) AND (lower((first_name)::text) ~>=~ 'chi'::text) AND (lower((first_name)::text) ~<~ 'chj'::text))
                Buffers: shared hit=2
  Planning:
    Buffers: shared hit=212
- Planning Time: 0.525 ms
- Execution Time: 0.530 ms
+ Planning Time: 1.234 ms
+ Execution Time: 0.958 ms
 (16 rows)
 

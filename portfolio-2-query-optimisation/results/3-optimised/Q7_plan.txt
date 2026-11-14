@@ -14,40 +14,40 @@ ORDER BY i.invoice_no;
 
                                                                                 QUERY PLAN                                                                                
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=183.66..183.67 rows=2 width=109) (actual time=0.280..0.282 rows=2 loops=1)
+ Sort  (cost=183.96..183.97 rows=2 width=109) (actual time=0.840..0.842 rows=1 loops=1)
    Sort Key: i.invoice_no
    Sort Method: quicksort  Memory: 25kB
-   Buffers: shared hit=87
+   Buffers: shared hit=91
    InitPlan 1 (returns $0)
-     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.010..0.010 rows=1 loops=1)
+     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.035..0.036 rows=1 loops=1)
            Index Cond: ((hospital_no)::text = 'LCH-0000013'::text)
            Buffers: shared hit=3
-   ->  Nested Loop  (cost=28.98..175.35 rows=2 width=109) (actual time=0.235..0.261 rows=2 loops=1)
+   ->  Nested Loop  (cost=29.01..175.64 rows=2 width=109) (actual time=0.784..0.786 rows=1 loops=1)
          Join Filter: (((COALESCE(sum((invoice_item.quantity * invoice_item.unit_price)), '0'::numeric)) - COALESCE((sum(payment.amount)), '0'::numeric)) > '0'::numeric)
-         Rows Removed by Join Filter: 6
-         Buffers: shared hit=84
-         ->  Nested Loop  (cost=20.54..124.54 rows=6 width=53) (actual time=0.054..0.167 rows=8 loops=1)
+         Rows Removed by Join Filter: 7
+         Buffers: shared hit=85
+         ->  Nested Loop  (cost=20.57..124.77 rows=6 width=53) (actual time=0.177..0.551 rows=8 loops=1)
                Buffers: shared hit=53
-               ->  Bitmap Heap Scan on invoice i  (cost=4.47..28.00 rows=6 width=21) (actual time=0.033..0.050 rows=8 loops=1)
+               ->  Bitmap Heap Scan on invoice i  (cost=4.47..28.00 rows=6 width=21) (actual time=0.088..0.152 rows=8 loops=1)
                      Recheck Cond: (patient_id = $0)
                      Heap Blocks: exact=8
                      Buffers: shared hit=14
-                     ->  Bitmap Index Scan on idx_invoice_patient  (cost=0.00..4.47 rows=6 width=0) (actual time=0.027..0.027 rows=8 loops=1)
+                     ->  Bitmap Index Scan on idx_invoice_patient  (cost=0.00..4.47 rows=6 width=0) (actual time=0.073..0.073 rows=8 loops=1)
                            Index Cond: (patient_id = $0)
                            Buffers: shared hit=6
-               ->  Aggregate  (cost=16.07..16.08 rows=1 width=32) (actual time=0.014..0.014 rows=1 loops=8)
+               ->  Aggregate  (cost=16.10..16.11 rows=1 width=32) (actual time=0.049..0.049 rows=1 loops=8)
                      Buffers: shared hit=39
-                     ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..16.05 rows=3 width=10) (actual time=0.009..0.011 rows=3 loops=8)
+                     ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..16.08 rows=3 width=10) (actual time=0.034..0.043 rows=3 loops=8)
                            Index Cond: (invoice_id = i.invoice_id)
                            Buffers: shared hit=39
-         ->  Aggregate  (cost=8.44..8.45 rows=1 width=32) (actual time=0.011..0.011 rows=1 loops=8)
-               Buffers: shared hit=31
-               ->  Index Scan using idx_payment_invoice on payment  (cost=0.42..8.44 rows=1 width=7) (actual time=0.010..0.010 rows=1 loops=8)
+         ->  Aggregate  (cost=8.44..8.45 rows=1 width=32) (actual time=0.028..0.028 rows=1 loops=8)
+               Buffers: shared hit=32
+               ->  Index Scan using idx_payment_invoice on payment  (cost=0.42..8.44 rows=1 width=7) (actual time=0.027..0.027 rows=1 loops=8)
                      Index Cond: (invoice_id = i.invoice_id)
-                     Buffers: shared hit=31
+                     Buffers: shared hit=32
  Planning:
    Buffers: shared hit=415
- Planning Time: 0.847 ms
- Execution Time: 0.377 ms
+ Planning Time: 2.178 ms
+ Execution Time: 0.981 ms
 (35 rows)
 

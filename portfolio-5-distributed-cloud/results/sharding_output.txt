@@ -1,0 +1,105 @@
+
+==================== 1. Start 4 servers ====================
+coordinator running on port 5440
+shard_ikj running on port 5441
+shard_lki running on port 5442
+shard_yab running on port 5443
+
+==================== 2. Each shard stores ONLY its own branch (enforced by a CHECK constraint) ====================
+shard_ikj: table encounter_record created, CHECK (branch_id = 1)
+shard_lki: table encounter_record created, CHECK (branch_id = 2)
+shard_yab: table encounter_record created, CHECK (branch_id = 3)
+
+==================== 3. Coordinator: partitioned table whose partitions live on the shards ====================
+Partition key: LIST (branch_id)
+Partitions: encounter_ikj FOR VALUES IN ('1'), FOREIGN,
+            encounter_lki FOR VALUES IN ('2'), FOREIGN,
+            encounter_yab FOR VALUES IN ('3'), FOREIGN
+
+
+==================== 4. Load 30,000 encounters THROUGH the coordinator (rows are routed by branch_id) ====================
+Rows stored on each shard (asked directly, bypassing the coordinator):
+  shard_ikj: 15023 rows, branch_id(s) = 1
+  shard_lki: 9053 rows, branch_id(s) = 2
+  shard_yab: 5927 rows, branch_id(s) = 3
+
+==================== 5. Query for ONE branch touches ONE shard (partition pruning) ====================
+                                                              QUERY PLAN                                                               
+---------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate
+   Output: count(*), sum(encounter_record.amount)
+   ->  Foreign Scan on public.encounter_lki encounter_record
+         Output: encounter_record.amount
+         Remote SQL: SELECT amount FROM public.encounter_record WHERE ((started_at >= '2026-01-01 00:00:00+01')) AND ((branch_id = 2))
+(5 rows)
+
+ lekki_visits_2026 | lekki_billed_2026 
+-------------------+-------------------
+              4153 |      231049380.99
+(1 row)
+
+
+==================== 6. Group-wide report: each shard aggregates its own rows in parallel, the coordinator combines them ====================
+                                             QUERY PLAN                                              
+-----------------------------------------------------------------------------------------------------
+ Append
+   ->  Async Foreign Scan
+         Output: encounter_record.branch_id, (count(*)), (sum(encounter_record.amount))
+         Relations: Aggregate on (public.encounter_ikj encounter_record)
+         Remote SQL: SELECT branch_id, count(*), sum(amount) FROM public.encounter_record GROUP BY 1
+   ->  Async Foreign Scan
+         Output: encounter_record_1.branch_id, (count(*)), (sum(encounter_record_1.amount))
+         Relations: Aggregate on (public.encounter_lki encounter_record_1)
+         Remote SQL: SELECT branch_id, count(*), sum(amount) FROM public.encounter_record GROUP BY 1
+   ->  Async Foreign Scan
+         Output: encounter_record_2.branch_id, (count(*)), (sum(encounter_record_2.amount))
+         Relations: Aggregate on (public.encounter_yab encounter_record_2)
+         Remote SQL: SELECT branch_id, count(*), sum(amount) FROM public.encounter_record GROUP BY 1
+(13 rows)
+
+SET
+ branch_code | visits |    billed    
+-------------+--------+--------------
+ IKJ         |  15023 | 823304422.14
+ LKI         |   9053 | 498725054.06
+ YAB         |   5927 | 325833856.91
+(3 rows)
+
+
+==================== 7. Query NOT on the shard key: a patient's history must ask every shard (scatter-gather) ====================
+                          QUERY PLAN                          
+--------------------------------------------------------------
+ Append
+   ->  Async Foreign Scan on encounter_ikj encounter_record_1
+   ->  Async Foreign Scan on encounter_lki encounter_record_2
+   ->  Async Foreign Scan on encounter_yab encounter_record_3
+(4 rows)
+
+ branch_id | started_at | encounter_type | primary_dx 
+-----------+------------+----------------+------------
+         1 | 2025-02-04 | outpatient     | B54
+         2 | 2025-10-10 | outpatient     | H66.9
+         3 | 2026-08-12 | outpatient     | B54
+(3 rows)
+
+
+==================== 8. A wrong-branch row is rejected by the shard itself ====================
+ERROR:  new row for relation "encounter_record" violates check constraint "encounter_record_branch_id_check"
+DETAIL:  Failing row contains (999999, 2, LCH-0000001, 2026-11-14 05:12:17.296028+01, outpatient, B54, 10000.00).
+-> Ikeja shard refused a Lekki row
+
+==================== 9. Partial failure: the Lekki shard goes down ====================
+shard_lki stopped
+Ikeja query (does not need Lekki):
+ ikeja_visits 
+--------------
+        15023
+(1 row)
+
+Group-wide query (needs every shard):
+ERROR:  could not connect to server "shard_lki"
+DETAIL:  connection to server at "localhost" (127.0.0.1), port 5442 failed: Connection refused
+-> Ikeja and Yaba keep working; only Lekki's data and group-wide reports are unavailable.
+shard_lki restarted; group-wide count = 30003
+
+==================== Done. Nodes are left running; stop them with ./03_stop_all.sh ====================

@@ -7,7 +7,7 @@ the median execution time of 5 runs (after 1 warm-up run).
 
 Uses only the Python standard library + the psql command-line client.
 Connection settings come from the usual PG* environment variables, e.g.
-    export PGHOST=localhost PGUSER=postgres PGDATABASE=lagoon_care
+    export PGHOST=localhost PGUSER=postgres PGDATABASE=laguna_care
 
 Usage:
     python3 run_benchmark.py <phase-name> <queries.sql>

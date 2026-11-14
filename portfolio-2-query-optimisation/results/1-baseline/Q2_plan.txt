@@ -9,28 +9,28 @@ ORDER BY lower(a.slot);
 
                                                                 QUERY PLAN                                                                 
 -------------------------------------------------------------------------------------------------------------------------------------------
- Gather Merge  (cost=7014.35..7014.58 rows=2 width=75) (actual time=30.532..30.675 rows=3 loops=1)
+ Gather Merge  (cost=7014.35..7014.58 rows=2 width=75) (actual time=54.016..58.882 rows=3 loops=1)
    Workers Planned: 2
    Workers Launched: 2
-   Buffers: shared hit=656 read=3555 written=96
-   ->  Sort  (cost=6014.33..6014.33 rows=1 width=75) (actual time=26.449..26.450 rows=1 loops=3)
+   Buffers: shared hit=4208
+   ->  Sort  (cost=6014.33..6014.33 rows=1 width=75) (actual time=22.228..22.229 rows=1 loops=3)
          Sort Key: (lower(a.slot))
          Sort Method: quicksort  Memory: 25kB
-         Buffers: shared hit=656 read=3555 written=96
+         Buffers: shared hit=4208
          Worker 0:  Sort Method: quicksort  Memory: 25kB
          Worker 1:  Sort Method: quicksort  Memory: 25kB
-         ->  Nested Loop  (cost=0.29..6014.32 rows=1 width=75) (actual time=18.679..26.413 rows=1 loops=3)
-               Buffers: shared hit=638 read=3555 written=96
-               ->  Parallel Seq Scan on appointment a  (cost=0.00..6006.00 rows=1 width=53) (actual time=18.670..26.400 rows=1 loops=3)
+         ->  Nested Loop  (cost=0.29..6014.32 rows=1 width=75) (actual time=6.757..22.188 rows=1 loops=3)
+               Buffers: shared hit=4190
+               ->  Parallel Seq Scan on appointment a  (cost=0.00..6006.00 rows=1 width=53) (actual time=6.729..22.142 rows=1 loops=3)
                      Filter: ((slot && '["2026-03-10 00:00:00+01","2026-03-11 00:00:00+01")'::tstzrange) AND (doctor_id = 17))
                      Rows Removed by Filter: 99999
-                     Buffers: shared hit=628 read=3555 written=96
-               ->  Index Scan using patient_pkey on patient p  (cost=0.29..8.31 rows=1 width=33) (actual time=0.009..0.009 rows=1 loops=3)
+                     Buffers: shared hit=4181
+               ->  Index Scan using patient_pkey on patient p  (cost=0.29..8.31 rows=1 width=33) (actual time=0.036..0.036 rows=1 loops=3)
                      Index Cond: (patient_id = a.patient_id)
-                     Buffers: shared hit=10
+                     Buffers: shared hit=9
  Planning:
-   Buffers: shared hit=306
- Planning Time: 0.682 ms
- Execution Time: 30.726 ms
+   Buffers: shared hit=310
+ Planning Time: 1.556 ms
+ Execution Time: 58.970 ms
 (23 rows)
 

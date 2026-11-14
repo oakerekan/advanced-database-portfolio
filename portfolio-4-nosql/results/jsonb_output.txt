@@ -1,0 +1,142 @@
+SET
+psql:03_jsonb_document_store.sql:8: NOTICE:  index "enc_patient_history" does not exist, skipping
+psql:03_jsonb_document_store.sql:8: NOTICE:  index "enc_doc_gin" does not exist, skipping
+psql:03_jsonb_document_store.sql:8: NOTICE:  index "pat_name_ci" does not exist, skipping
+DROP INDEX
+psql:03_jsonb_document_store.sql:9: NOTICE:  constraint "enc_valid" of relation "encounters" does not exist, skipping
+ALTER TABLE
+psql:03_jsonb_document_store.sql:10: NOTICE:  constraint "pat_valid" of relation "patients" does not exist, skipping
+ALTER TABLE
+=== J1 (= M1). Patient history for LCH-0000013, newest first ===
+--- before index
+                             QUERY PLAN                              
+---------------------------------------------------------------------
+ Sort (actual rows=8 loops=1)
+   Sort Key: ((doc ->> 'startedAt'::text)) DESC
+   Sort Method: quicksort  Memory: 32kB
+   ->  Seq Scan on encounters (actual rows=8 loops=1)
+         Filter: ((doc ->> 'patientId'::text) = 'LCH-0000013'::text)
+         Rows Removed by Filter: 22757
+
+CREATE INDEX
+ANALYZE
+--- after index
+                                  QUERY PLAN                                   
+-------------------------------------------------------------------------------
+ Sort (actual rows=8 loops=1)
+   Sort Key: ((doc ->> 'startedAt'::text)) DESC
+   Sort Method: quicksort  Memory: 32kB
+   ->  Bitmap Heap Scan on encounters (actual rows=8 loops=1)
+         Recheck Cond: ((doc ->> 'patientId'::text) = 'LCH-0000013'::text)
+         Heap Blocks: exact=8
+         ->  Bitmap Index Scan on enc_patient_history (actual rows=8 loops=1)
+               Index Cond: ((doc ->> 'patientId'::text) = 'LCH-0000013'::text)
+
+   visit    | br  |        doctor         |     primary_diagnosis      |                      drugs                       |   labs   
+------------+-----+-----------------------+----------------------------+--------------------------------------------------+----------
+ 2026-08-12 | YAB | Dr Aisha Oyelaran     | B54 Malaria, unspecified   | Ciprofloxacin, ORS                               | 
+ 2026-05-31 | YAB | Dr Adaeze Okafor      | A01.0 Typhoid fever        | Ferrous Sulphate, Hydrochlorothiazide, Ibuprofen | 
+ 2026-04-28 | IKJ | Dr Musa Akinola       | I10 Essential hypertension |                                                  | 
+ 2026-04-22 | IKJ | Dr Temitope Obi       | A01.0 Typhoid fever        |                                                  | 
+ 2025-10-10 | LKI | Dr Temitope Obi       | H66.9 Otitis media         |                                                  | 
+ 2025-03-12 | YAB | Dr Chukwuemeka Bakare | M54.5 Low back pain        |                                                  | FBC, UA
+ 2025-02-26 | IKJ | Dr Segun Afolabi      | R51 Headache               | Artemether/Lumefantrine, Omeprazole              | FBS, HIV
+ 2025-02-04 | IKJ | Dr Folake Abubakar    | B54 Malaria, unspecified   | Diclofenac, Insulin, Vitamin C                   | FBS, HIV
+
+=== J2 (= M2). Case-insensitive name search ===
+CREATE INDEX
+ANALYZE
+                                                                   QUERY PLAN                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on patients (actual rows=4 loops=1)
+   Recheck Cond: ((lower((doc #>> '{name,last}'::text[])) = 'okafor'::text) AND (lower((doc #>> '{name,first}'::text[])) = 'chinedu'::text))
+   Heap Blocks: exact=4
+   ->  Bitmap Index Scan on pat_name_ci (actual rows=4 loops=1)
+         Index Cond: ((lower((doc #>> '{name,last}'::text[])) = 'okafor'::text) AND (lower((doc #>> '{name,first}'::text[])) = 'chinedu'::text))
+
+     id      |  first  |  last  |    born    
+-------------+---------+--------+------------
+ LCH-0001950 | Chinedu | Okafor | 2008-01-29
+ LCH-0002578 | Chinedu | Okafor | 2001-06-05
+ LCH-0002717 | Chinedu | Okafor | 1981-01-04
+ LCH-0003102 | Chinedu | Okafor | 1973-03-16
+
+=== J3 (= M3). FBC results with haemoglobin below 8 g/dL (JSON path query) ===
+--- before index
+                                            QUERY PLAN                                            
+--------------------------------------------------------------------------------------------------
+ Seq Scan on encounters (actual rows=52 loops=1)
+   Filter: (doc @? '$."labResults"[*]?(@."test" == "FBC" && @."values"."hb_g_dL" < 8)'::jsonpath)
+   Rows Removed by Filter: 22713
+
+CREATE INDEX
+ANALYZE
+--- after GIN index
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on encounters (actual rows=52 loops=1)
+   Recheck Cond: (doc @? '$."labResults"[*]?(@."test" == "FBC" && @."values"."hb_g_dL" < 8)'::jsonpath)
+   Rows Removed by Index Recheck: 715
+   Heap Blocks: exact=682
+   ->  Bitmap Index Scan on enc_doc_gin (actual rows=767 loops=1)
+         Index Cond: (doc @? '$."labResults"[*]?(@."test" == "FBC" && @."values"."hb_g_dL" < 8)'::jsonpath)
+
+ matching_encounters 
+---------------------
+                  52
+
+   patient   |   visit    | br  | hb  
+-------------+------------+-----+-----
+ LCH-0003335 | 2026-10-15 | YAB | 6.8
+ LCH-0001498 | 2026-09-17 | LKI | 7.3
+ LCH-0000723 | 2026-09-13 | YAB | 7.8
+ LCH-0003905 | 2026-09-05 | LKI | 6.6
+ LCH-0002238 | 2026-08-30 | IKJ | 7.8
+
+=== J4 (= M4). Top 3 primary diagnoses per branch in 2025 ===
+ branch |                                            top3                                             
+--------+---------------------------------------------------------------------------------------------
+ IKJ    | B54 Malaria, unspecified (917); I10 Essential hypertension (386); A01.0 Typhoid fever (317)
+ LKI    | B54 Malaria, unspecified (891); I10 Essential hypertension (344); A01.0 Typhoid fever (296)
+ YAB    | B54 Malaria, unspecified (923); I10 Essential hypertension (390); A01.0 Typhoid fever (277)
+
+=== J5 (= M5). Patients allergic to Penicillin who were prescribed Amoxicillin ===
+ patients_at_risk 
+------------------
+               96
+
+     id      |      name       | amoxicillin_visits 
+-------------+-----------------+--------------------
+ LCH-0002210 | Emeka Ezeh      |                  2
+ LCH-0002310 | Nkechi Umar     |                  2
+ LCH-0002410 | Aliyu Nnamdi    |                  2
+ LCH-0002730 | Bukola Mohammed |                  2
+ LCH-0004550 | Hauwa Okafor    |                  2
+
+=== J6 (= M6). Flexible schema ===
+ with_gcs | without_gcs | distinct_lab_tests 
+----------+-------------+--------------------
+     1710 |       21055 |                 30
+
+=== J7 (= M7). Update inside a document, in a transaction that is rolled back ===
+BEGIN
+UPDATE 1
+UPDATE 1
+                    new_field                     
+--------------------------------------------------
+ {"name": "Mr Akinola", "relationship": "spouse"}
+
+ROLLBACK
+=== J8 (= M8). Validation with CHECK constraints on JSON ===
+ALTER TABLE
+ALTER TABLE
+psql:03_jsonb_document_store.sql:101: ERROR:  new row for relation "patients" violates check constraint "pat_valid"
+DETAIL:  Failing row contains (LCH-9999999, {"_id": "LCH-9999999", "sex": "X", "name": {"last": "Patient", "...).
+psql:03_jsonb_document_store.sql:103: ERROR:  new row for relation "encounters" violates check constraint "enc_valid"
+DETAIL:  Failing row contains (ENC-X, {"_id": "ENC-X", "type": "outpatient", "branch": "ABJ", "doctor"...).
+=== Storage ===
+ collection | table_and_indexes | gin_index 
+------------+-------------------+-----------
+ encounters | 28 MB             | 4440 kB
+ patients   | 2328 kB           | 
+

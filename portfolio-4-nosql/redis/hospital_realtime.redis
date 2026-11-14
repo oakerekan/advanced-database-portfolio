@@ -1,0 +1,40 @@
+ECHO "=== Clean up keys from any previous run (only this demo's keys) ==="
+DEL lc:queue:IKJ:GM lc:beds:free:IKJ:ICU lc:cache:patient:LCH-0000013 lc:stats:IKJ:2026-11-14 lc:doctor:17 lc:stream:lab-results
+ECHO "=== 1. Live clinic queue (sorted set, score = arrival time as Unix seconds) ==="
+ZADD lc:queue:IKJ:GM 1763107200 LCH-0000013 1763107260 LCH-0000049 1763107330 LCH-0000076 1763107400 LCH-0001950
+ZRANGE lc:queue:IKJ:GM 0 -1 WITHSCORES
+ECHO "Position of LCH-0000076 in the queue (0 = next):"
+ZRANK lc:queue:IKJ:GM LCH-0000076
+ECHO "Doctor calls the next patient - ZPOPMIN removes and returns them in ONE atomic step:"
+ZPOPMIN lc:queue:IKJ:GM
+ECHO "Patients still waiting:"
+ZCARD lc:queue:IKJ:GM
+ECHO "=== 2. Free ICU beds (set) - atomic allocation, no two nurses get the same bed ==="
+SADD lc:beds:free:IKJ:ICU ICU-01 ICU-02 ICU-03
+SPOP lc:beds:free:IKJ:ICU
+SPOP lc:beds:free:IKJ:ICU
+ECHO "Free beds left:"
+SCARD lc:beds:free:IKJ:ICU
+ECHO "Patient discharged - bed ICU-02 returned:"
+SADD lc:beds:free:IKJ:ICU ICU-02
+SMEMBERS lc:beds:free:IKJ:ICU
+ECHO "=== 3. Cache a patient summary for 300 s (key-value with expiry) ==="
+SET lc:cache:patient:LCH-0000013 "{\"name\":\"Yetunde Akinola\",\"bloodGroup\":\"O+\",\"allergies\":[],\"lastVisit\":\"2026-08-12\"}" EX 300
+GET lc:cache:patient:LCH-0000013
+TTL lc:cache:patient:LCH-0000013
+ECHO "=== 4. Real-time dashboard counters (hash + atomic increment) ==="
+HINCRBY lc:stats:IKJ:2026-11-14 visits 1
+HINCRBY lc:stats:IKJ:2026-11-14 visits 1
+HINCRBY lc:stats:IKJ:2026-11-14 visits 1
+HINCRBY lc:stats:IKJ:2026-11-14 emergencies 1
+HINCRBYFLOAT lc:stats:IKJ:2026-11-14 takings_naira 25000.50
+HGETALL lc:stats:IKJ:2026-11-14
+ECHO "=== 5. Doctor status board (hash) ==="
+HSET lc:doctor:17 name "Dr Musa Akinola" status in_consultation room 4 branch IKJ
+HSET lc:doctor:17 status available
+HGETALL lc:doctor:17
+ECHO "=== 6. Lab result notifications (stream) - the ward reads new results as they arrive ==="
+XADD lc:stream:lab-results * encounter ENC-81418 patient LCH-0000013 test MP result positive
+XADD lc:stream:lab-results * encounter ENC-255299 patient LCH-0000752 test SMCS result abnormal
+XLEN lc:stream:lab-results
+XRANGE lc:stream:lab-results - + COUNT 2

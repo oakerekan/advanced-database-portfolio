@@ -1,14 +1,14 @@
 -- =====================================================================
 -- MIT 8103 - Portfolio 2: synthetic data generator
--- Lagoon Care Specialist Hospital
+-- Laguna Care Specialist Hospital
 --
 -- Loads realistic volumes of FAKE data so that query plans and indexes
 -- behave as they would in a real hospital (small tables are always
 -- scanned sequentially, so tiny demo data cannot show optimisation).
 --
 -- Run on an EMPTY schema:
---   psql -d lagoon_care -f ../portfolio-1-database-design/schema.sql
---   psql -d lagoon_care -f generate_data.sql
+--   psql -d laguna_care -f ../portfolio-1-database-design/schema.sql
+--   psql -d laguna_care -f generate_data.sql
 -- Takes about 1 minute. All names, numbers and records are fictitious.
 -- =====================================================================
 SET search_path TO hospital;
@@ -17,9 +17,9 @@ SELECT setseed(0.8103);                    -- repeatable "random" data
 
 -- ---------- Branches, departments ----------
 INSERT INTO branch (branch_code, name, address, phone, opened_on) VALUES
- ('IKJ','Lagoon Care Ikeja','12 Allen Avenue, Ikeja','01-2000001','2015-03-01'),
- ('LKI','Lagoon Care Lekki','5 Admiralty Way, Lekki Phase 1','01-2000002','2019-07-15'),
- ('YAB','Lagoon Care Yaba','33 Herbert Macaulay Way, Yaba','01-2000003','2022-01-10');
+ ('IKJ','Laguna Care Ikeja','12 Allen Avenue, Ikeja','01-2000001','2015-03-01'),
+ ('LKI','Laguna Care Lekki','5 Admiralty Way, Lekki Phase 1','01-2000002','2019-07-15'),
+ ('YAB','Laguna Care Yaba','33 Herbert Macaulay Way, Yaba','01-2000003','2022-01-10');
 
 -- 8 departments per branch -> department_id = (branch-1)*8 + k
 INSERT INTO department (branch_id, name)
@@ -40,7 +40,7 @@ SELECT 'LC-S-' || lpad(i::text,5,'0'),
               'Ogunleye','Danjuma','Obi','Afolabi','Lawal','Uche','Oyelaran','Ibekwe','Sani','Akinola'])[1 + (i*7) % 20],
        CASE WHEN i <= 150 THEN 'doctor'
             ELSE (ARRAY['nurse','lab_scientist','pharmacist','receptionist','billing_officer','admin'])[(i-151)%6 + 1] END,
-       'staff' || i || '@lagooncare.ng',
+       'staff' || i || '@lagunacare.ng',
        DATE '2015-03-01' + (random()*3500)::int
 FROM generate_series(1,450) i;
 

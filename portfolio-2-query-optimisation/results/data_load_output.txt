@@ -6,61 +6,61 @@ SET
 
 Timing is on.
 INSERT 0 3
-Time: 1.303 ms
+Time: 1.844 ms
 INSERT 0 24
-Time: 1.596 ms
+Time: 1.905 ms
 INSERT 0 450
-Time: 7.569 ms
+Time: 9.270 ms
 INSERT 0 150
-Time: 4.980 ms
+Time: 3.748 ms
 INSERT 0 6
-Time: 0.808 ms
+Time: 0.854 ms
 INSERT 0 60000
-Time: 761.078 ms
+Time: 973.351 ms
 INSERT 0 300000
-Time: 22015.837 ms (00:22.016)
+Time: 58186.728 ms (00:58.187)
 INSERT 0 255251
-Time: 5309.926 ms (00:05.310)
+Time: 25706.220 ms (00:25.706)
 INSERT 0 20000
-Time: 330.845 ms
+Time: 2146.575 ms (00:02.147)
 INSERT 0 357858
-Time: 3174.553 ms (00:03.175)
+Time: 15079.150 ms (00:15.079)
 INSERT 0 120
-Time: 2.549 ms
+Time: 6.965 ms
 INSERT 0 360
-Time: 4.123 ms
+Time: 10.409 ms
 INSERT 0 165380
-Time: 1056.882 ms (00:01.057)
+Time: 5040.785 ms (00:05.041)
 INSERT 0 331261
-Time: 3695.662 ms (00:03.696)
+Time: 17410.534 ms (00:17.411)
 INSERT 0 30
-Time: 1.534 ms
+Time: 2.023 ms
 INSERT 0 165173
-Time: 2103.844 ms (00:02.104)
+Time: 9981.467 ms (00:09.981)
 INSERT 0 160666
-Time: 1773.143 ms (00:01.773)
+Time: 8031.355 ms (00:08.031)
 INSERT 0 30
-Time: 1.557 ms
+Time: 4.612 ms
 INSERT 0 600
-Time: 5.166 ms
+Time: 11.592 ms
 INSERT 0 12000
-Time: 387.798 ms
+Time: 1545.095 ms (00:01.545)
 INSERT 0 275251
-Time: 5074.516 ms (00:05.075)
+Time: 27530.301 ms (00:27.530)
 INSERT 0 12000
-Time: 223.447 ms
+Time: 1326.899 ms (00:01.327)
 INSERT 0 275251
-Time: 2297.101 ms (00:02.297)
+Time: 10902.320 ms (00:10.902)
 INSERT 0 331261
-Time: 3117.997 ms (00:03.118)
+Time: 15435.334 ms (00:15.435)
 INSERT 0 161970
-Time: 1744.203 ms (00:01.744)
+Time: 7067.167 ms (00:07.067)
 INSERT 0 12000
-Time: 107.443 ms
+Time: 533.095 ms
 INSERT 0 258809
-Time: 5213.250 ms (00:05.213)
+Time: 26226.098 ms (00:26.226)
 UPDATE 287251
-Time: 4021.171 ms (00:04.021)
+Time: 16545.046 ms (00:16.545)
 Timing is off.
 VACUUM
      table_name     |  rows  
@@ -82,8 +82,8 @@ VACUUM
  branch_drug_stock  |    360
  doctor             |    150
  drug               |    120
- lab_test           |     30
  ward               |     30
+ lab_test           |     30
  department         |     24
  insurance_provider |      6
  branch             |      3

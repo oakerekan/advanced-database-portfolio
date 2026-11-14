@@ -12,7 +12,7 @@ sNN_name_B.sql) and a check script (sNN_name_check.sql). The runner:
   5. writes results/sNN_name.txt and results/summary.md.
 
 Standard library + psql only. Connection from PG* environment variables, e.g.
-    export PGHOST=localhost PGUSER=postgres PGDATABASE=lagoon_p3
+    export PGHOST=localhost PGUSER=postgres PGDATABASE=laguna_p3
 Usage:
     python3 run_concurrency.py            # all scenarios
     python3 run_concurrency.py s03        # just one

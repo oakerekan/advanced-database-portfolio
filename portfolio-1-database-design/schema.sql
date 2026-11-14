@@ -1,9 +1,9 @@
 -- =====================================================================
 -- MIT 8103 Advanced Database Systems - Portfolio 1
--- Case study : Lagoon Care Specialist Hospital (multi-branch, Lagos)
--- DBMS       : PostgreSQL 16
+-- Case study : Laguna Care Specialist Hospital (multi-branch, Lagos)
+-- DBMS       : PostgreSQL 15+
 -- File       : schema.sql  - full relational schema with keys & constraints
--- Run        : psql -d lagoon_care -f schema.sql
+-- Run        : psql -d laguna_care -f schema.sql
 -- =====================================================================
 
 DROP SCHEMA IF EXISTS hospital CASCADE;

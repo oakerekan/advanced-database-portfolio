@@ -1,0 +1,24 @@
+{
+    "_id": "LCH-0000010",
+    "sex": "F",
+    "name": {
+        "last": "Bello",
+        "first": "Kemi"
+    },
+    "contact": {
+        "phone": "08010000010",
+        "address": "118 Adeola Odeku Street, Lagos"
+    },
+    "allergies": [
+        "Penicillin"
+    ],
+    "insurance": {
+        "type": "NHIA",
+        "policyNo": "POL-00000010",
+        "provider": "NHIA (Formal Sector)"
+    },
+    "bloodGroup": "O+",
+    "homeBranch": "IKJ",
+    "dateOfBirth": "1999-05-04",
+    "registeredAt": "2021-07-29T14:13:40Z"
+}

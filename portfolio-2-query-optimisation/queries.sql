@@ -1,6 +1,6 @@
 -- =====================================================================
 -- MIT 8103 - Portfolio 2: workload queries (ORIGINAL versions)
--- Lagoon Care Specialist Hospital
+-- Laguna Care Specialist Hospital
 -- Each query is a real task a hospital user performs. Blocks are
 -- separated by "-- @Qn" markers so run_benchmark.py can time them.
 -- =====================================================================

@@ -3,21 +3,21 @@
 -- Inserts a small amount of valid data, then deliberately attempts
 -- inserts that break business rules. Each "SHOULD FAIL" test must be
 -- rejected by the database.
--- Run: psql -d lagoon_care -f schema.sql && psql -d lagoon_care -f constraint_tests.sql
+-- Run: psql -d laguna_care -f schema.sql && psql -d laguna_care -f constraint_tests.sql
 -- =====================================================================
 SET search_path TO hospital;
 \echo '=== Valid setup data ==='
 
 INSERT INTO branch (branch_code, name, address, phone, opened_on) VALUES
- ('IKJ','Lagoon Care Ikeja','12 Allen Avenue, Ikeja','01-2000001','2015-03-01'),
- ('LKI','Lagoon Care Lekki','5 Admiralty Way, Lekki Phase 1','01-2000002','2019-07-15');
+ ('IKJ','Laguna Care Ikeja','12 Allen Avenue, Ikeja','01-2000001','2015-03-01'),
+ ('LKI','Laguna Care Lekki','5 Admiralty Way, Lekki Phase 1','01-2000002','2019-07-15');
 
 INSERT INTO department (branch_id, name) VALUES (1,'General Medicine'), (1,'Cardiology'), (2,'General Medicine');
 
 INSERT INTO staff (staff_no, home_branch_id, department_id, first_name, last_name, role, email, hire_date) VALUES
- ('LC-S-00001',1,1,'Adaeze','Okafor','doctor','a.okafor@lagooncare.ng','2016-01-10'),
- ('LC-S-00002',1,NULL,'Tunde','Bakare','receptionist','t.bakare@lagooncare.ng','2018-05-02'),
- ('LC-S-00003',1,NULL,'Halima','Musa','lab_scientist','h.musa@lagooncare.ng','2020-09-14');
+ ('LC-S-00001',1,1,'Adaeze','Okafor','doctor','a.okafor@lagunacare.ng','2016-01-10'),
+ ('LC-S-00002',1,NULL,'Tunde','Bakare','receptionist','t.bakare@lagunacare.ng','2018-05-02'),
+ ('LC-S-00003',1,NULL,'Halima','Musa','lab_scientist','h.musa@lagunacare.ng','2020-09-14');
 
 INSERT INTO doctor (staff_id, specialty, mdcn_licence_no) VALUES (1,'Internal Medicine','MDCN/R/45123');
 

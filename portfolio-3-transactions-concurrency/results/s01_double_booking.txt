@@ -7,13 +7,13 @@ Session B: Receptionist Eze (starts at +0.5s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.07s  A | BEGIN; book Dr Okafor 10:00-10:30 for Chinedu
-+ 0.08s  A | INSERT done, NOT committed; holding the transaction open for 2 s
-+ 0.57s  B |                               BEGIN; book Dr Okafor 10:15-10:45 for Ngozi (overlaps A) ... waiting?
-+ 2.09s  A | COMMIT
-+ 2.09s  B |                               ERROR:  conflicting key value violates exclusion constraint "no_doctor_double_booking"
-+ 2.09s  B |                               DETAIL:  Key (doctor_id, slot)=(1, ["2026-12-01 10:15:00+01","2026-12-01 10:45:00+01")) conflicts with existing key (doctor_id, slot)=(1, ["2026-12-01 10:00:00+01","2026-12-01 10:30:00+01")).
-+ 2.09s  B |                               transaction ended
++ 0.03s  A | BEGIN; book Dr Okafor 10:00-10:30 for Chinedu
++ 0.03s  A | INSERT done, NOT committed; holding the transaction open for 2 s
++ 0.53s  B |                               BEGIN; book Dr Okafor 10:15-10:45 for Ngozi (overlaps A) ... waiting?
++ 2.04s  B |                               ERROR:  conflicting key value violates exclusion constraint "no_doctor_double_booking"
++ 2.04s  B |                               DETAIL:  Key (doctor_id, slot)=(1, ["2026-12-01 10:15:00+01","2026-12-01 10:45:00+01")) conflicts with existing key (doctor_id, slot)=(1, ["2026-12-01 10:00:00+01","2026-12-01 10:30:00+01")).
++ 2.04s  B |                               transaction ended
++ 2.04s  A | COMMIT
 ------------------------------------------------------------------------------
 
 Final state (check script):
