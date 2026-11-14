@@ -81,7 +81,7 @@ erDiagram
     STAFF {
         int staff_id PK
         varchar staff_no UK
-        smallint branch_id FK
+        smallint home_branch_id FK
         int department_id FK
         varchar role
         varchar email UK
@@ -143,7 +143,7 @@ Notation: PK = primary key, FK = foreign key, UK = unique (alternate) key.
 
 - **branch**(branch_id PK, branch_code UK, name UK, address, city, phone, opened_on)
 - **department**(department_id PK, branch_id FK, name), UNIQUE(branch_id, name)
-- **staff**(staff_id PK, staff_no UK, branch_id FK, department_id FK, first_name, last_name, role, email UK, phone, hire_date, is_active)
+- **staff**(staff_id PK, staff_no UK, home_branch_id FK, department_id FK, first_name, last_name, role, email UK, phone, hire_date, is_active)
 - **doctor**(staff_id PK/FK→staff, specialty, mdcn_licence_no UK)
 - **insurance_provider**(provider_id PK, name UK, provider_type, phone)
 - **patient**(patient_id PK, hospital_no UK, home_branch_id FK, names, date_of_birth, sex, blood_group, contact fields, provider_id FK, policy_no), UNIQUE(provider_id, policy_no)
@@ -171,6 +171,7 @@ Notation: PK = primary key, FK = foreign key, UK = unique (alternate) key.
 - **Composite keys** are used where the relationship *is* the entity: `branch_drug_stock(branch_id, drug_id)`, `prescription_item(prescription_id, drug_id)` and `invoice_item(invoice_id, line_no)`.
 - **Specialisation (IS-A):** `doctor` shares its primary key with `staff`. Doctor-only attributes (specialty, licence) don't create NULL columns for nurses or receptionists. Appointments reference `doctor`, not `staff`, so the database rejects a booking with a non-doctor (Test 6).
 - **Multi-branch design:** `branch_id` is carried on patients (home branch), appointments, encounters, stock, wards and invoices. A patient keeps **one hospital number across all branches**, and branch-level data such as stock and beds stays separate. This prepares the data for sharding by branch in Portfolio 5.
+- **Doctors can work at more than one branch.** `staff.home_branch_id` records where someone is employed, but visiting consultants often run clinics at other branches. So `appointment.branch_id` and `encounter.branch_id` record where the visit *actually* happened. They are independent facts, not values derivable from the doctor, so storing them does not break 3NF.
 - **Prices are copied at billing time** (`invoice_item.unit_price`). This is intentional, not redundancy: a later change in a drug's price must not alter an invoice already issued.
 
 ## 6. Constraints that enforce hospital business rules

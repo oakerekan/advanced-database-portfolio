@@ -14,7 +14,7 @@ INSERT INTO branch (branch_code, name, address, phone, opened_on) VALUES
 
 INSERT INTO department (branch_id, name) VALUES (1,'General Medicine'), (1,'Cardiology'), (2,'General Medicine');
 
-INSERT INTO staff (staff_no, branch_id, department_id, first_name, last_name, role, email, hire_date) VALUES
+INSERT INTO staff (staff_no, home_branch_id, department_id, first_name, last_name, role, email, hire_date) VALUES
  ('LC-S-00001',1,1,'Adaeze','Okafor','doctor','a.okafor@lagooncare.ng','2016-01-10'),
  ('LC-S-00002',1,NULL,'Tunde','Bakare','receptionist','t.bakare@lagooncare.ng','2018-05-02'),
  ('LC-S-00003',1,NULL,'Halima','Musa','lab_scientist','h.musa@lagooncare.ng','2020-09-14');

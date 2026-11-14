@@ -36,7 +36,9 @@ CREATE TABLE department (
 CREATE TABLE staff (
     staff_id      INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     staff_no      VARCHAR(12)  NOT NULL UNIQUE,          -- e.g. LC-S-00042
-    branch_id     SMALLINT     NOT NULL REFERENCES branch(branch_id),
+    -- Branch where the staff member is employed. Doctors may still run
+    -- clinics at other branches, so appointment/encounter keep their own branch_id.
+    home_branch_id SMALLINT    NOT NULL REFERENCES branch(branch_id),
     department_id INT          REFERENCES department(department_id),
     first_name    VARCHAR(50)  NOT NULL,
     last_name     VARCHAR(50)  NOT NULL,
