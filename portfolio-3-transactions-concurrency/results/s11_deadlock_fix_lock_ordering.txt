@@ -7,16 +7,16 @@ Session B: Pharmacist Obi (moves 3 Coartem Lekki -> Ikeja) (starts at +0.3s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.04s  A | lock both rows in branch_id order ...
-+ 0.05s  A | both rows locked
-+ 0.05s  A | updated Ikeja row (-2)
-+ 0.34s  B |                               lock both rows in branch_id order ...
-+ 1.05s  A | now updating Lekki row (+2) ...
-+ 1.05s  A | COMMIT
-+ 1.05s  B |                               both rows locked
-+ 1.05s  B |                               updated Lekki row (-3)
-+ 2.05s  B |                               now updating Ikeja row (+3) ...
-+ 2.06s  B |                               COMMIT
++ 0.11s  A | lock both rows in branch_id order ...
++ 0.11s  A | both rows locked
++ 0.12s  A | updated Ikeja row (-2)
++ 0.42s  B |                               lock both rows in branch_id order ...
++ 1.12s  A | now updating Lekki row (+2) ...
++ 1.14s  A | COMMIT
++ 1.14s  B |                               both rows locked
++ 1.14s  B |                               updated Lekki row (-3)
++ 2.15s  B |                               now updating Ikeja row (+3) ...
++ 2.17s  B |                               COMMIT
 ------------------------------------------------------------------------------
 
 Final state (check script):

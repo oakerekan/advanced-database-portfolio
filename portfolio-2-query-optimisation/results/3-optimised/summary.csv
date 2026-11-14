@@ -1,9 +1,9 @@
 query,title,median_ms,all_runs_ms
-Q1,"Patient history for a doctor (all visits, diagnoses, drugs)",0.616,0.541 0.658 0.573 0.671 0.616
-Q2,One doctor's schedule for a day,1.386,1.347 1.402 1.386 1.379 1.712
-Q3,Front-desk clinic list: all appointments at the Lekki branch for a day,1.788,1.744 2.139 1.922 1.743 1.788
-Q4,"Front-desk patient search by name (case-insensitive, prefix on first name)",0.817,0.768 0.817 0.937 0.813 0.881
-Q5,Cashier end-of-day: takings by payment method for one day,2.446,2.035 2.693 2.234 2.446 3.049
-Q6,Management report: monthly revenue billed per branch in 2025,0.375,0.350 0.356 0.398 0.392 0.375
-Q7,Billing desk: a patient's outstanding invoices,0.997,1.168 1.058 0.997 0.964 0.981
-Q8,"Lab dashboard: urgent tests still waiting, oldest first",1.827,1.826 1.827 2.233 1.817 1.876
+Q1,"Patient history for a doctor (all visits, diagnoses, drugs)",1.151,1.110 1.283 1.121 1.317 1.151
+Q2,One doctor's schedule for a day,1.800,1.818 1.773 1.800 1.795 1.846
+Q3,Front-desk clinic list: all appointments at the Lekki branch for a day,3.067,3.599 3.513 2.926 3.027 3.067
+Q4,"Front-desk patient search by name (case-insensitive, prefix on first name)",1.279,1.364 1.328 1.275 1.279 1.267
+Q5,Cashier end-of-day: takings by payment method for one day,2.672,2.672 2.316 3.813 2.511 2.843
+Q6,Management report: monthly revenue billed per branch in 2025,0.498,0.308 0.308 0.538 0.498 0.551
+Q7,Billing desk: a patient's outstanding invoices,0.977,1.755 0.977 0.945 0.914 0.995
+Q8,"Lab dashboard: urgent tests still waiting, oldest first",1.937,1.955 1.912 2.343 1.937 1.937

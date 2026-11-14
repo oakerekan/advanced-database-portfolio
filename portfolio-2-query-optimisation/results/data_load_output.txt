@@ -6,86 +6,15 @@ SET
 
 Timing is on.
 INSERT 0 3
-Time: 1.844 ms
+Time: 22.248 ms
 INSERT 0 24
-Time: 1.905 ms
+Time: 4.162 ms
 INSERT 0 450
-Time: 9.270 ms
+Time: 20.573 ms
 INSERT 0 150
-Time: 3.748 ms
+Time: 7.069 ms
 INSERT 0 6
-Time: 0.854 ms
+Time: 2.075 ms
 INSERT 0 60000
-Time: 973.351 ms
-INSERT 0 300000
-Time: 58186.728 ms (00:58.187)
-INSERT 0 255251
-Time: 25706.220 ms (00:25.706)
-INSERT 0 20000
-Time: 2146.575 ms (00:02.147)
-INSERT 0 357858
-Time: 15079.150 ms (00:15.079)
-INSERT 0 120
-Time: 6.965 ms
-INSERT 0 360
-Time: 10.409 ms
-INSERT 0 165380
-Time: 5040.785 ms (00:05.041)
-INSERT 0 331261
-Time: 17410.534 ms (00:17.411)
-INSERT 0 30
-Time: 2.023 ms
-INSERT 0 165173
-Time: 9981.467 ms (00:09.981)
-INSERT 0 160666
-Time: 8031.355 ms (00:08.031)
-INSERT 0 30
-Time: 4.612 ms
-INSERT 0 600
-Time: 11.592 ms
-INSERT 0 12000
-Time: 1545.095 ms (00:01.545)
-INSERT 0 275251
-Time: 27530.301 ms (00:27.530)
-INSERT 0 12000
-Time: 1326.899 ms (00:01.327)
-INSERT 0 275251
-Time: 10902.320 ms (00:10.902)
-INSERT 0 331261
-Time: 15435.334 ms (00:15.435)
-INSERT 0 161970
-Time: 7067.167 ms (00:07.067)
-INSERT 0 12000
-Time: 533.095 ms
-INSERT 0 258809
-Time: 26226.098 ms (00:26.226)
-UPDATE 287251
-Time: 16545.046 ms (00:16.545)
-Timing is off.
-VACUUM
-     table_name     |  rows  
---------------------+--------
- invoice_item       | 780482
- diagnosis          | 357858
- prescription_item  | 331261
- appointment        | 300000
- invoice            | 287251
- encounter          | 275251
- payment            | 258809
- prescription       | 165380
- lab_request        | 165173
- lab_result         | 160666
- patient            |  60000
- admission          |  12000
- bed                |    600
- staff              |    450
- branch_drug_stock  |    360
- doctor             |    150
- drug               |    120
- ward               |     30
- lab_test           |     30
- department         |     24
- insurance_provider |      6
- branch             |      3
-(22 rows)
-
+Time: 1359.303 ms (00:01.359)
+Time: 8443.126 ms (00:08.443)

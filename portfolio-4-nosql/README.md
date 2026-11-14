@@ -86,13 +86,13 @@ The operations:
 - **M7. In-place updates:** `$push` a new lab result, and `$set` a brand-new field with no `ALTER TABLE`. Both are undone at the end.
 - **M8. Validation:** inserts with `sex: "X"` and a non-existent branch are **rejected**.
 
-**Expected results.** These are the numbers from the JSONB run below; your MongoDB run should match them:
+**Results.** My MongoDB 9.0 run (`results/mongodb_output.txt`, screenshots in `screenshots/`) matched the JSONB run exactly:
 - M1: 8 visits
 - M2: 4 patients named Chinedu Okafor
 - M3: 52 encounters
 - M4: malaria first in every branch (IKJ 917, LKI 891, YAB 923)
 - M5: 96 patients at risk
-- M6: 1,710 encounters with GCS and 21,055 without; 30 test types
+- M6: 1,710 encounters with GCS and 21,055 without; 30 test types. MongoDB first reported 31, because `distinct()` counts visits with no lab results as a `null` value; the query now filters out `null`.
 
 ### 3b. The same model in PostgreSQL JSONB (`03_jsonb_document_store.sql`)
 

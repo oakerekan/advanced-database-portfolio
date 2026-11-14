@@ -94,7 +94,7 @@ BEGIN
 INSERT 0 1
 SAVEPOINT
 psql:01_transactions.sql:73: ERROR:  conflicting key value violates exclusion constraint "no_bed_double_occupancy"
-DETAIL:  Key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-14 05:09:23.912101+01",)) conflicts with existing key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-13 23:09:23.910531+01",)).
+DETAIL:  Key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-14 05:40:10.893645+01",)) conflicts with existing key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-13 23:40:10.88661+01",)).
 ROLLBACK
 INSERT 0 1
 COMMIT

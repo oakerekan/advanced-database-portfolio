@@ -12,7 +12,7 @@ PY=$(command -v python3 >/dev/null 2>&1 && python3 -c 1 >/dev/null 2>&1 && echo 
 dropdb --if-exists laguna_care
 createdb laguna_care
 psql -X -q -f ../portfolio-1-database-design/schema.sql
-psql -X -f generate_data.sql > results/data_load_output.txt
+psql -X -v ON_ERROR_STOP=1 -f generate_data.sql > results/data_load_output.txt 2>&1   # errors are saved too, and stop the script
 
 $PY run_benchmark.py 1-baseline  queries.sql            # no extra indexes
 psql -X -q -f optimisations.sql                             # add indexes + materialized view

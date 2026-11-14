@@ -9,32 +9,32 @@ ORDER BY total DESC;
 
                                                                    QUERY PLAN                                                                    
 -------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=6155.44..6155.46 rows=5 width=46) (actual time=59.799..64.754 rows=5 loops=1)
+ Sort  (cost=6154.44..6154.46 rows=5 width=46) (actual time=62.207..72.600 rows=5 loops=1)
    Sort Key: (sum(amount)) DESC
    Sort Method: quicksort  Memory: 25kB
-   Buffers: shared hit=2871
-   ->  Finalize GroupAggregate  (cost=6147.04..6155.39 rows=5 width=46) (actual time=59.734..64.735 rows=5 loops=1)
+   Buffers: shared hit=2870
+   ->  Finalize GroupAggregate  (cost=6146.04..6154.39 rows=5 width=46) (actual time=62.130..72.579 rows=5 loops=1)
          Group Key: method
-         Buffers: shared hit=2868
-         ->  Gather Merge  (cost=6147.04..6155.27 rows=5 width=46) (actual time=59.714..64.722 rows=10 loops=1)
+         Buffers: shared hit=2867
+         ->  Gather Merge  (cost=6146.04..6154.27 rows=5 width=46) (actual time=62.104..72.563 rows=10 loops=1)
                Workers Planned: 1
                Workers Launched: 1
-               Buffers: shared hit=2868
-               ->  Partial GroupAggregate  (cost=5147.03..5154.70 rows=5 width=46) (actual time=35.022..35.057 rows=5 loops=2)
+               Buffers: shared hit=2867
+               ->  Partial GroupAggregate  (cost=5146.03..5153.70 rows=5 width=46) (actual time=37.881..37.927 rows=5 loops=2)
                      Group Key: method
-                     Buffers: shared hit=2868
-                     ->  Sort  (cost=5147.03..5148.93 rows=761 width=13) (actual time=34.990..35.000 rows=214 loops=2)
+                     Buffers: shared hit=2867
+                     ->  Sort  (cost=5146.03..5147.93 rows=761 width=13) (actual time=37.836..37.846 rows=198 loops=2)
                            Sort Key: method
-                           Sort Method: quicksort  Memory: 44kB
-                           Buffers: shared hit=2868
+                           Sort Method: quicksort  Memory: 43kB
+                           Buffers: shared hit=2867
                            Worker 0:  Sort Method: quicksort  Memory: 29kB
-                           ->  Parallel Seq Scan on payment  (cost=0.00..5110.61 rows=761 width=13) (actual time=0.216..34.787 rows=214 loops=2)
+                           ->  Parallel Seq Scan on payment  (cost=0.00..5109.61 rows=761 width=13) (actual time=0.389..37.582 rows=198 loops=2)
                                  Filter: ((paid_at)::date = '2026-06-01'::date)
-                                 Rows Removed by Filter: 129190
-                                 Buffers: shared hit=2827
+                                 Rows Removed by Filter: 129206
+                                 Buffers: shared hit=2826
  Planning:
    Buffers: shared hit=183
- Planning Time: 0.855 ms
- Execution Time: 64.936 ms
+ Planning Time: 1.029 ms
+ Execution Time: 72.819 ms
 (27 rows)
 

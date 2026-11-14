@@ -7,13 +7,13 @@ Session B: Pharmacist Obi (dispenses 4 Coartem) (starts at +0.5s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.03s  A | read Coartem stock = 10; will dispense 3
-+ 0.53s  B |                               SELECT ... FOR UPDATE (waits if the row is locked)
-+ 1.53s  A | UPDATE stock = 7
-+ 1.53s  A | COMMIT
-+ 1.53s  B |                               read Coartem stock = 7; will dispense 4
-+ 3.04s  B |                               UPDATE stock = 3
-+ 3.04s  B |                               COMMIT
++ 0.12s  A | read Coartem stock = 10; will dispense 3
++ 0.65s  B |                               SELECT ... FOR UPDATE (waits if the row is locked)
++ 1.63s  A | UPDATE stock = 7
++ 1.65s  A | COMMIT
++ 1.65s  B |                               read Coartem stock = 7; will dispense 4
++ 3.17s  B |                               UPDATE stock = 3
++ 3.19s  B |                               COMMIT
 ------------------------------------------------------------------------------
 
 Final state (check script):

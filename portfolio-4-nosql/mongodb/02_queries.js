@@ -95,7 +95,7 @@ m5.slice(0, 5).forEach(p => print(`  ${p._id}  ${p.name.padEnd(22)} amoxicillin 
 title("M6. Flexible schema: vital-sign fields differ between documents");
 print(`  encounters with GCS recorded (emergency only): ${db.encounters.countDocuments({ "vitals.gcs": { $exists: true } })}`);
 print(`  encounters without GCS:                        ${db.encounters.countDocuments({ "vitals.gcs": { $exists: false } })}`);
-print(`  distinct lab tests stored with their own value fields: ${db.encounters.distinct("labResults.test").length}`);
+print(`  distinct lab tests stored with their own value fields: ${db.encounters.distinct("labResults.test").filter(t => t !== null).length}`);
 
 // --------------------------------------------------------------------
 title("M7. Updates: add a new lab result to a visit, and a new field to a patient");

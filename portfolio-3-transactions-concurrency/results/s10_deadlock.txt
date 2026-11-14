@@ -7,14 +7,14 @@ Session B: Pharmacist Obi (moves 3 Coartem Lekki -> Ikeja) (starts at +0.3s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.05s  A | locked Ikeja row (-2)
-+ 0.33s  B |                               locked Lekki row (-3)
-+ 1.05s  A | now updating Lekki row (+2) ...
-+ 1.34s  B |                               now updating Ikeja row (+3) ...
-+ 2.05s  A | ERROR:  deadlock detected
-+ 2.05s  A | DETAIL:  Process 312 waits for ShareLock on transaction 2247; blocked by process 314.
-+ 2.05s  A | transaction ended
-+ 2.06s  B |                               transaction ended
++ 0.11s  A | locked Ikeja row (-2)
++ 0.43s  B |                               locked Lekki row (-3)
++ 1.12s  A | now updating Lekki row (+2) ...
++ 1.44s  B |                               now updating Ikeja row (+3) ...
++ 2.12s  A | ERROR:  deadlock detected
++ 2.12s  A | DETAIL:  Process 32660 waits for ShareLock on transaction 4662; blocked by process 32380.
++ 2.12s  A | transaction ended
++ 2.14s  B |                               transaction ended
 ------------------------------------------------------------------------------
 
 Final state (check script):

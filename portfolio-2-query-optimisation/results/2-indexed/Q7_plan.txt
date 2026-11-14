@@ -9,48 +9,48 @@ ORDER BY invoice_no;
 
                                                                                   QUERY PLAN                                                                                   
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=97089.24..97089.24 rows=2 width=109) (actual time=670.752..670.755 rows=1 loops=1)
+ Sort  (cost=96794.40..96794.40 rows=2 width=109) (actual time=810.462..810.465 rows=2 loops=1)
    Sort Key: i.invoice_no
    Sort Method: quicksort  Memory: 25kB
-   Buffers: shared hit=774376
+   Buffers: shared hit=714595
    InitPlan 1 (returns $0)
-     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.028..0.029 rows=1 loops=1)
+     ->  Index Scan using patient_hospital_no_key on patient  (cost=0.29..8.31 rows=1 width=8) (actual time=0.034..0.035 rows=1 loops=1)
            Index Cond: ((hospital_no)::text = 'LCH-0000013'::text)
            Buffers: shared hit=3
-   ->  Merge Right Join  (cost=28.92..97080.92 rows=2 width=109) (actual time=209.750..670.724 rows=1 loops=1)
+   ->  Merge Right Join  (cost=28.92..96786.08 rows=2 width=109) (actual time=240.235..810.408 rows=2 loops=1)
          Merge Cond: (payment.invoice_id = i.invoice_id)
          Filter: ((COALESCE((sum((invoice_item.quantity * invoice_item.unit_price))), '0'::numeric) - COALESCE((sum(payment.amount)), '0'::numeric)) > '0'::numeric)
-         Rows Removed by Filter: 7
-         Buffers: shared hit=774370
-         ->  GroupAggregate  (cost=0.42..22555.20 rows=258809 width=40) (actual time=0.055..211.990 rows=243440 loops=1)
+         Rows Removed by Filter: 6
+         Buffers: shared hit=714589
+         ->  GroupAggregate  (cost=0.42..22027.81 rows=258809 width=40) (actual time=0.063..201.164 rows=243421 loops=1)
                Group Key: payment.invoice_id
-               Buffers: shared hit=243971
-               ->  Index Scan using idx_payment_invoice on payment  (cost=0.42..18026.04 rows=258809 width=15) (actual time=0.026..113.998 rows=243441 loops=1)
-                     Buffers: shared hit=243971
-         ->  Materialize  (cost=28.50..71290.52 rows=6 width=53) (actual time=136.562..447.109 rows=8 loops=1)
-               Buffers: shared hit=530399
-               ->  Merge Left Join  (cost=28.50..71290.50 rows=6 width=53) (actual time=136.556..447.085 rows=8 loops=1)
+               Buffers: shared hit=184234
+               ->  Index Scan using idx_payment_invoice on payment  (cost=0.42..17498.65 rows=258809 width=15) (actual time=0.026..77.730 rows=243422 loops=1)
+                     Buffers: shared hit=184234
+         ->  Materialize  (cost=28.50..71523.06 rows=6 width=53) (actual time=177.951..594.296 rows=8 loops=1)
+               Buffers: shared hit=530355
+               ->  Merge Left Join  (cost=28.50..71523.05 rows=6 width=53) (actual time=177.940..594.263 rows=8 loops=1)
                      Merge Cond: (i.invoice_id = invoice_item.invoice_id)
-                     Buffers: shared hit=530399
-                     ->  Sort  (cost=28.08..28.09 rows=6 width=21) (actual time=0.121..0.129 rows=8 loops=1)
+                     Buffers: shared hit=530355
+                     ->  Sort  (cost=28.08..28.09 rows=6 width=21) (actual time=0.158..0.168 rows=8 loops=1)
                            Sort Key: i.invoice_id
                            Sort Method: quicksort  Memory: 25kB
                            Buffers: shared hit=14
-                           ->  Bitmap Heap Scan on invoice i  (cost=4.47..28.00 rows=6 width=21) (actual time=0.059..0.107 rows=8 loops=1)
+                           ->  Bitmap Heap Scan on invoice i  (cost=4.47..28.00 rows=6 width=21) (actual time=0.077..0.140 rows=8 loops=1)
                                  Recheck Cond: (patient_id = $0)
                                  Heap Blocks: exact=8
                                  Buffers: shared hit=14
-                                 ->  Bitmap Index Scan on idx_invoice_patient  (cost=0.00..4.47 rows=6 width=0) (actual time=0.049..0.049 rows=8 loops=1)
+                                 ->  Bitmap Index Scan on idx_invoice_patient  (cost=0.00..4.47 rows=6 width=0) (actual time=0.063..0.063 rows=8 loops=1)
                                        Index Cond: (patient_id = $0)
                                        Buffers: shared hit=6
-                     ->  GroupAggregate  (cost=0.42..68457.62 rows=224378 width=40) (actual time=0.058..433.801 rows=270229 loops=1)
+                     ->  GroupAggregate  (cost=0.42..68613.34 rows=230524 width=40) (actual time=0.082..576.393 rows=270229 loops=1)
                            Group Key: invoice_item.invoice_id
-                           Buffers: shared hit=530385
-                           ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..59799.28 rows=780482 width=18) (actual time=0.034..175.203 rows=754285 loops=1)
-                                 Buffers: shared hit=530385
+                           Buffers: shared hit=530341
+                           ->  Index Scan using invoice_item_pkey on invoice_item  (cost=0.42..59878.18 rows=780482 width=18) (actual time=0.048..232.960 rows=754285 loops=1)
+                                 Buffers: shared hit=530341
  Planning:
    Buffers: shared hit=453
- Planning Time: 1.656 ms
- Execution Time: 670.938 ms
+ Planning Time: 2.214 ms
+ Execution Time: 810.717 ms
 (43 rows)
 

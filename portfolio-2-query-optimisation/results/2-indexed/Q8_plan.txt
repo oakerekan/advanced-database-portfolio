@@ -12,22 +12,22 @@ LIMIT 50;
 
                                                                               QUERY PLAN                                                                               
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Limit  (cost=34.03..1651.47 rows=50 width=29) (actual time=0.877..1.056 rows=50 loops=1)
+ Limit  (cost=33.27..1616.14 rows=50 width=29) (actual time=1.577..1.884 rows=50 loops=1)
    Buffers: shared hit=559
-   ->  Incremental Sort  (cost=34.03..4983.40 rows=153 width=29) (actual time=0.876..1.053 rows=50 loops=1)
+   ->  Incremental Sort  (cost=33.27..5193.44 rows=163 width=29) (actual time=1.575..1.879 rows=50 loops=1)
          Sort Key: lr.requested_at, lr.request_id
          Presorted Key: lr.requested_at
          Full-sort Groups: 2  Sort Method: quicksort  Average Memory: 27kB  Peak Memory: 27kB
          Buffers: shared hit=559
-         ->  Nested Loop  (cost=0.85..4976.62 rows=153 width=29) (actual time=0.048..1.005 rows=52 loops=1)
+         ->  Nested Loop  (cost=0.85..5186.21 rows=163 width=29) (actual time=0.085..1.804 rows=52 loops=1)
                Buffers: shared hit=550
-               ->  Nested Loop  (cost=0.70..4965.77 rows=153 width=29) (actual time=0.037..0.963 rows=52 loops=1)
+               ->  Nested Loop  (cost=0.70..5175.25 rows=163 width=29) (actual time=0.065..1.720 rows=52 loops=1)
                      Buffers: shared hit=502
-                     ->  Index Scan using idx_lab_request_pending on lab_request lr  (cost=0.28..3742.45 rows=153 width=35) (actual time=0.021..0.565 rows=52 loops=1)
+                     ->  Index Scan using idx_lab_request_pending on lab_request lr  (cost=0.28..3871.53 rows=163 width=35) (actual time=0.036..1.036 rows=52 loops=1)
                            Filter: ((priority)::text = ANY ('{urgent,stat}'::text[]))
                            Rows Removed by Filter: 285
                            Buffers: shared hit=294
-                     ->  Index Scan using encounter_pkey on encounter e  (cost=0.42..8.00 rows=1 width=10) (actual time=0.007..0.007 rows=1 loops=52)
+                     ->  Index Scan using encounter_pkey on encounter e  (cost=0.42..8.00 rows=1 width=10) (actual time=0.013..0.013 rows=1 loops=52)
                            Index Cond: (encounter_id = lr.encounter_id)
                            Buffers: shared hit=208
                ->  Memoize  (cost=0.15..0.24 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=52)
@@ -35,12 +35,12 @@ LIMIT 50;
                      Cache Mode: logical
                      Hits: 28  Misses: 24  Evictions: 0  Overflows: 0  Memory Usage: 3kB
                      Buffers: shared hit=48
-                     ->  Index Scan using lab_test_pkey on lab_test t  (cost=0.14..0.23 rows=1 width=8) (actual time=0.001..0.001 rows=1 loops=24)
+                     ->  Index Scan using lab_test_pkey on lab_test t  (cost=0.14..0.23 rows=1 width=8) (actual time=0.001..0.002 rows=1 loops=24)
                            Index Cond: (test_id = lr.test_id)
                            Buffers: shared hit=48
  Planning:
    Buffers: shared hit=416
- Planning Time: 1.274 ms
- Execution Time: 1.113 ms
+ Planning Time: 2.148 ms
+ Execution Time: 1.978 ms
 (30 rows)
 

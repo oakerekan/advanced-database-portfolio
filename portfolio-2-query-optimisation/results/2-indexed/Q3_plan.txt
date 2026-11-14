@@ -12,33 +12,33 @@ ORDER BY lower(a.slot), s.last_name, a.appointment_id;
 
                                                                                                QUERY PLAN                                                                                               
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Sort  (cost=1666.27..1666.67 rows=162 width=49) (actual time=2.332..2.339 rows=151 loops=1)
+ Sort  (cost=1509.82..1510.18 rows=144 width=49) (actual time=2.950..2.960 rows=151 loops=1)
    Sort Key: (lower(a.slot)), s.last_name, a.appointment_id
    Sort Method: quicksort  Memory: 39kB
    Buffers: shared hit=552
-   ->  Hash Join  (cost=23.90..1660.32 rows=162 width=49) (actual time=0.229..2.069 rows=151 loops=1)
+   ->  Hash Join  (cost=23.67..1504.66 rows=144 width=49) (actual time=0.287..2.610 rows=151 loops=1)
          Hash Cond: (a.doctor_id = s.staff_id)
          Buffers: shared hit=540
-         ->  Nested Loop  (cost=6.78..1642.37 rows=162 width=61) (actual time=0.070..1.864 rows=151 loops=1)
+         ->  Nested Loop  (cost=6.55..1486.80 rows=144 width=61) (actual time=0.088..2.347 rows=151 loops=1)
                Buffers: shared hit=530
-               ->  Bitmap Heap Scan on appointment a  (cost=6.49..552.55 rows=162 width=51) (actual time=0.050..0.526 rows=151 loops=1)
+               ->  Bitmap Heap Scan on appointment a  (cost=6.26..498.52 rows=144 width=51) (actual time=0.065..0.682 rows=151 loops=1)
                      Recheck Cond: ((branch_id = 2) AND (lower(slot) >= '2026-03-10 00:00:00+01'::timestamp with time zone) AND (lower(slot) < '2026-03-11 00:00:00+01'::timestamp with time zone))
                      Heap Blocks: exact=71
                      Buffers: shared hit=77
-                     ->  Bitmap Index Scan on idx_appointment_branch_start  (cost=0.00..6.45 rows=162 width=0) (actual time=0.033..0.033 rows=151 loops=1)
+                     ->  Bitmap Index Scan on idx_appointment_branch_start  (cost=0.00..6.22 rows=144 width=0) (actual time=0.044..0.044 rows=151 loops=1)
                            Index Cond: ((branch_id = 2) AND (lower(slot) >= '2026-03-10 00:00:00+01'::timestamp with time zone) AND (lower(slot) < '2026-03-11 00:00:00+01'::timestamp with time zone))
                            Buffers: shared hit=6
-               ->  Index Scan using patient_pkey on patient p  (cost=0.29..6.73 rows=1 width=26) (actual time=0.008..0.008 rows=1 loops=151)
+               ->  Index Scan using patient_pkey on patient p  (cost=0.29..6.86 rows=1 width=26) (actual time=0.010..0.010 rows=1 loops=151)
                      Index Cond: (patient_id = a.patient_id)
                      Buffers: shared hit=453
-         ->  Hash  (cost=11.50..11.50 rows=450 width=10) (actual time=0.137..0.137 rows=450 loops=1)
+         ->  Hash  (cost=11.50..11.50 rows=450 width=10) (actual time=0.169..0.170 rows=450 loops=1)
                Buckets: 1024  Batches: 1  Memory Usage: 28kB
                Buffers: shared hit=7
-               ->  Seq Scan on staff s  (cost=0.00..11.50 rows=450 width=10) (actual time=0.008..0.083 rows=450 loops=1)
+               ->  Seq Scan on staff s  (cost=0.00..11.50 rows=450 width=10) (actual time=0.010..0.099 rows=450 loops=1)
                      Buffers: shared hit=7
  Planning:
    Buffers: shared hit=446
- Planning Time: 1.696 ms
- Execution Time: 2.467 ms
+ Planning Time: 2.330 ms
+ Execution Time: 3.107 ms
 (28 rows)
 

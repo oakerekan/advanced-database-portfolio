@@ -7,12 +7,12 @@ Session B: Nurse B (takes ICU-02 out for repair) (starts at +0.3s)
 
 Timeline (seconds since start)
 ------------------------------------------------------------------------------
-+ 0.03s  A | ICU beds in service = 2
-+ 0.33s  B |                               ICU beds in service = 2
-+ 1.03s  A | rule OK (>= 2) -> ICU-01 taken out of service
-+ 1.03s  A | COMMIT
-+ 1.33s  B |                               rule OK (>= 2) -> ICU-02 taken out of service
-+ 1.34s  B |                               COMMIT
++ 0.10s  A | ICU beds in service = 2
++ 0.43s  B |                               ICU beds in service = 2
++ 1.11s  A | rule OK (>= 2) -> ICU-01 taken out of service
++ 1.11s  A | COMMIT
++ 1.43s  B |                               rule OK (>= 2) -> ICU-02 taken out of service
++ 1.45s  B |                               COMMIT
 ------------------------------------------------------------------------------
 
 Final state (check script):
