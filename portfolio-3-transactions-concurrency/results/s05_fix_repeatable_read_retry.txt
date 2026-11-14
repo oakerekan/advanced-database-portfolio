@@ -1,0 +1,31 @@
+Scenario : s05_fix_repeatable_read_retry
+Title    : Fix 2 - optimistic: REPEATABLE READ detects the conflict, the application retries
+Expected : B's UPDATE fails with a serialization error; B retries and stock ends at 3
+
+Session A: Pharmacist Musa (dispenses 3 Coartem) (starts at +0.0s)
+Session B: Pharmacist Obi (dispenses 4 Coartem, retries on conflict) (starts at +0.5s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.11s  A | read Coartem stock = 10; will dispense 3
++ 0.72s  B |                               attempt 1: read Coartem stock = 10; will dispense 4
++ 1.62s  A | UPDATE stock = 7
++ 1.62s  A | COMMIT
++ 2.23s  B |                               ERROR:  could not serialize access due to concurrent update
++ 2.23s  B |                               attempt 1 rolled back (SQLSTATE 40001) -> retrying in a new transaction
++ 2.23s  B |                               attempt 2: read Coartem stock = 7; will dispense 4
++ 2.23s  B |                               UPDATE stock = 3
++ 2.24s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ ikeja_coartem_stock | correct_value 
+---------------------+---------------
+                   3 |             3
+(1 row)
+
+          verdict           
+----------------------------
+ RESULT: stock = 3, correct
+(1 row)
+

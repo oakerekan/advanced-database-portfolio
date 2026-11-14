@@ -1,0 +1,13 @@
+| Scenario | What it shows | Expected | Observed |
+|---|---|---|---|
+| s01_double_booking | Two receptionists book overlapping slots for the same doctor at the same moment | B waits for A, then is rejected by the exclusion constraint; one booking only | 1 booking saved - double booking prevented |
+| s02_booking_after_rollback | As s01, but the first receptionist rolls back (patient changes their mind) | B waits for A; once A rolls back, B's booking succeeds | Ngozi's booking saved after A rolled back |
+| s03_lost_update | Lost update - two pharmacists read stock, then write back (read-then-write, READ COMMITTED) | stock should end at 10 - 3 - 4 = 3, but ends at 6: A's update is lost | stock = 6, should be 3 - LOST UPDATE (7 dispensed, only 4 deducted) |
+| s04_fix_select_for_update | Fix 1 - pessimistic locking with SELECT ... FOR UPDATE (READ COMMITTED) | B blocks on its read until A commits, then reads 7 and writes 3 | stock = 3, correct |
+| s05_fix_repeatable_read_retry | Fix 2 - optimistic: REPEATABLE READ detects the conflict, the application retries | B's UPDATE fails with a serialization error; B retries and stock ends at 3 | stock = 3, correct |
+| s06_nonrepeatable_read | Non-repeatable read - a report reads the same total twice in READ COMMITTED | the two reads inside ONE transaction disagree (10,000 then 30,000) | READ COMMITTED - each statement sees data committed before it started, so read 2 saw the new payment |
+| s07_repeatable_read_snapshot | The same report under REPEATABLE READ (one snapshot for the whole transaction) | both reads show 10,000; the new payment is only visible after COMMIT | REPEATABLE READ - both reads used one snapshot (consistent report); read 3 sees the payment |
+| s08_write_skew_repeatable_read | Write skew - rule "ICU keeps at least 1 bed in service", two nurses, REPEATABLE READ | both see 2 beds, both take one out -> 0 ICU beds in service (rule broken) | 0 ICU beds in service - WRITE SKEW broke the rule |
+| s09_write_skew_serializable | The same two nurses under SERIALIZABLE | PostgreSQL (SSI) aborts the second nurse's transaction; 1 ICU bed stays in service | 1 ICU bed(s) in service - rule kept |
+| s10_deadlock | Deadlock - two stock transfers between branches lock rows in opposite order | PostgreSQL detects the deadlock and aborts one transfer; total stock stays 20 | Ikeja 13, Lekki 7, total 20 (consistent) - only one transfer applied |
+| s11_deadlock_fix_lock_ordering | Deadlock fix - every transfer locks rows in the same order (lowest branch_id first) | B simply waits for A; both transfers succeed; Ikeja 11, Lekki 9, total 20 | Ikeja 11, Lekki 9, total 20 - both transfers applied, no deadlock |

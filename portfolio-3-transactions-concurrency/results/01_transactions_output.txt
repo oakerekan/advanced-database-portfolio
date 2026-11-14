@@ -1,0 +1,117 @@
+SET
+
+############ A1. COMMIT: dispense a whole prescription as one unit ############
+-- Before: Ikeja stock and Chinedu's prescription
+      generic_name       | ikeja_stock 
+-------------------------+-------------
+ Artemether/Lumefantrine |          10
+ Paracetamol             |         100
+
+ drug_id | quantity | quantity_dispensed 
+---------+----------+--------------------
+       1 |        6 |                  0
+       2 |       10 |                  0
+
+BEGIN
+ dispense_item 
+---------------
+ 
+
+ dispense_item 
+---------------
+ 
+
+COMMIT
+-- After COMMIT: stock reduced, lines dispensed, prescription closed, drugs billed
+      generic_name       | ikeja_stock 
+-------------------------+-------------
+ Artemether/Lumefantrine |           4
+ Paracetamol             |          90
+
+  status   | drug_id | quantity | quantity_dispensed 
+-----------+---------+----------+--------------------
+ dispensed |       1 |        6 |                  6
+ dispensed |       2 |       10 |                 10
+
+ line_no |  item_type   |            description            | quantity | unit_price 
+---------+--------------+-----------------------------------+----------+------------
+       1 | consultation | Doctor consultation               |     1.00 |   10000.00
+       2 | drug         | Artemether/Lumefantrine 20/120 mg |     6.00 |     350.00
+       3 | drug         | Paracetamol 500 mg                |    10.00 |      50.00
+
+
+############ A2. ATOMICITY: an error half-way rolls back the whole transaction ############
+-- A second prescription needs 6 more Coartem, but only 4 are left at Ikeja.
+INSERT 0 1
+INSERT 0 2
+BEGIN
+ dispense_item 
+---------------
+ 
+
+-- Inside the transaction, Paracetamol stock is now:
+ paracetamol_inside_txn 
+------------------------
+                     80
+
+psql:01_transactions.sql:41: ERROR:  Insufficient stock of drug 1 at branch 1 (need 6)
+CONTEXT:  PL/pgSQL function dispense_item(bigint,integer,smallint) line 25 at RAISE
+psql:01_transactions.sql:42: ERROR:  current transaction is aborted, commands ignored until end of transaction block
+ROLLBACK
+-- After ROLLBACK: Paracetamol is back at 90 and nothing on prescription 2 was dispensed
+      generic_name       | ikeja_stock 
+-------------------------+-------------
+ Artemether/Lumefantrine |           4
+ Paracetamol             |          90
+
+ drug_id | quantity | quantity_dispensed 
+---------+----------+--------------------
+       1 |        6 |                  0
+       2 |       10 |                  0
+
+ invoice_lines_still 
+---------------------
+                   3
+
+
+############ A3. Explicit ROLLBACK: cashier cancels a mistaken payment ############
+BEGIN
+INSERT 0 1
+   invoice_no   | paid_seen_inside_txn 
+----------------+----------------------
+ INV-IKJ-000001 |            109999.00
+
+ROLLBACK
+   invoice_no   | paid_after_rollback 
+----------------+---------------------
+ INV-IKJ-000001 |            10000.00
+
+
+############ A4. SAVEPOINT: admit a patient, recover from one failed step ############
+-- Amina is already in ICU-01 (bed 1).
+INSERT 0 1
+BEGIN
+INSERT 0 1
+SAVEPOINT
+psql:01_transactions.sql:73: ERROR:  conflicting key value violates exclusion constraint "no_bed_double_occupancy"
+DETAIL:  Key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-14 04:47:54.085985+01",)) conflicts with existing key (bed_id, tstzrange(admitted_at, discharged_at))=(1, ["2026-11-13 22:47:54.081711+01",)).
+ROLLBACK
+INSERT 0 1
+COMMIT
+-- Result: the emergency encounter (step 1) survived, Ngozi is in ICU-02
+ admission_id | first_name | bed_label | encounter_id | still_admitted 
+--------------+------------+-----------+--------------+----------------
+            1 | Amina      | ICU-01    |              | t
+            3 | Ngozi      | ICU-02    |            2 | t
+
+ encounter_id | encounter_type |        chief_complaint        
+--------------+----------------+-------------------------------
+            1 | outpatient     | Fever and headache for 3 days
+            2 | emergency      | Severe difficulty breathing
+
+
+############ A5. Default isolation level ############
+ default_transaction_isolation 
+-------------------------------
+ read committed
+

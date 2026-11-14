@@ -1,0 +1,29 @@
+Scenario : s08_write_skew_repeatable_read
+Title    : Write skew - rule "ICU keeps at least 1 bed in service", two nurses, REPEATABLE READ
+Expected : both see 2 beds, both take one out -> 0 ICU beds in service (rule broken)
+
+Session A: Nurse A (takes ICU-01 out for cleaning) (starts at +0.0s)
+Session B: Nurse B (takes ICU-02 out for repair) (starts at +0.3s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.10s  A | ICU beds in service = 2
++ 0.41s  B |                               ICU beds in service = 2
++ 1.11s  A | rule OK (>= 2) -> ICU-01 taken out of service
++ 1.11s  A | COMMIT
++ 1.41s  B |                               rule OK (>= 2) -> ICU-02 taken out of service
++ 1.41s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ bed_label | is_in_service 
+-----------+---------------
+ ICU-01    | f
+ ICU-02    | f
+(2 rows)
+
+                          verdict                          
+-----------------------------------------------------------
+ RESULT: 0 ICU beds in service - WRITE SKEW broke the rule
+(1 row)
+

@@ -1,0 +1,28 @@
+Scenario : s02_booking_after_rollback
+Title    : As s01, but the first receptionist rolls back (patient changes their mind)
+Expected : B waits for A; once A rolls back, B's booking succeeds
+
+Session A: Receptionist Bakare (starts at +0.0s)
+Session B: Receptionist Eze (starts at +0.5s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.06s  A | BEGIN; book Dr Okafor 10:00-10:30 for Chinedu
++ 0.07s  A | INSERT done, NOT committed; patient is deciding...
++ 0.57s  B |                               BEGIN; book Dr Okafor 10:15-10:45 for Ngozi (overlaps A) ... waiting?
++ 2.08s  A | ROLLBACK (patient cancelled)
++ 2.09s  B |                               INSERT succeeded once A rolled back
++ 2.09s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ appointment_id | patient |         starts         |          ends          
+----------------+---------+------------------------+------------------------
+              2 | Ngozi   | 2026-12-01 10:15:00+01 | 2026-12-01 10:45:00+01
+(1 row)
+
+                      verdict                      
+---------------------------------------------------
+ RESULT: Ngozi's booking saved after A rolled back
+(1 row)
+

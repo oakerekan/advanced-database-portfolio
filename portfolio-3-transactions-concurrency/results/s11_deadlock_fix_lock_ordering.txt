@@ -1,0 +1,33 @@
+Scenario : s11_deadlock_fix_lock_ordering
+Title    : Deadlock fix - every transfer locks rows in the same order (lowest branch_id first)
+Expected : B simply waits for A; both transfers succeed; Ikeja 11, Lekki 9, total 20
+
+Session A: Pharmacist Musa (moves 2 Coartem Ikeja -> Lekki) (starts at +0.0s)
+Session B: Pharmacist Obi (moves 3 Coartem Lekki -> Ikeja) (starts at +0.3s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.10s  A | lock both rows in branch_id order ...
++ 0.10s  A | both rows locked
++ 0.10s  A | updated Ikeja row (-2)
++ 0.43s  B |                               lock both rows in branch_id order ...
++ 1.11s  A | now updating Lekki row (+2) ...
++ 1.12s  A | COMMIT
++ 1.12s  B |                               both rows locked
++ 1.12s  B |                               updated Lekki row (-3)
++ 2.13s  B |                               now updating Ikeja row (+3) ...
++ 2.14s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ branch_code | quantity 
+-------------+----------
+ IKJ         |       11
+ LKI         |        9
+(2 rows)
+
+                                  verdict                                  
+---------------------------------------------------------------------------
+ RESULT: Ikeja 11, Lekki 9, total 20 - both transfers applied, no deadlock
+(1 row)
+

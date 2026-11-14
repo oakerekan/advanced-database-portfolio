@@ -1,0 +1,31 @@
+Scenario : s10_deadlock
+Title    : Deadlock - two stock transfers between branches lock rows in opposite order
+Expected : PostgreSQL detects the deadlock and aborts one transfer; total stock stays 20
+
+Session A: Pharmacist Musa (moves 2 Coartem Ikeja -> Lekki) (starts at +0.0s)
+Session B: Pharmacist Obi (moves 3 Coartem Lekki -> Ikeja) (starts at +0.3s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.08s  A | locked Ikeja row (-2)
++ 0.41s  B |                               locked Lekki row (-3)
++ 1.09s  A | now updating Lekki row (+2) ...
++ 1.42s  B |                               now updating Ikeja row (+3) ...
++ 2.09s  A | ERROR:  deadlock detected
++ 2.09s  A | DETAIL:  Process 30172 waits for ShareLock on transaction 4038; blocked by process 28420.
++ 2.09s  A | transaction ended
++ 2.09s  B |                               transaction ended
+------------------------------------------------------------------------------
+
+Final state (check script):
+ branch_code | quantity 
+-------------+----------
+ IKJ         |       13
+ LKI         |        7
+(2 rows)
+
+                                   verdict                                    
+------------------------------------------------------------------------------
+ RESULT: Ikeja 13, Lekki 7, total 20 (consistent) - only one transfer applied
+(1 row)
+

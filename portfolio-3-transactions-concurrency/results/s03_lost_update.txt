@@ -1,0 +1,28 @@
+Scenario : s03_lost_update
+Title    : Lost update - two pharmacists read stock, then write back (read-then-write, READ COMMITTED)
+Expected : stock should end at 10 - 3 - 4 = 3, but ends at 6: A's update is lost
+
+Session A: Pharmacist Musa (dispenses 3 Coartem) (starts at +0.0s)
+Session B: Pharmacist Obi (dispenses 4 Coartem) (starts at +0.5s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.08s  A | read Coartem stock = 10; will dispense 3
++ 0.57s  B |                               read Coartem stock = 10; will dispense 4
++ 1.59s  A | UPDATE stock = 7
++ 1.60s  A | COMMIT
++ 2.07s  B |                               UPDATE stock = 6
++ 2.08s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ ikeja_coartem_stock | correct_value 
+---------------------+---------------
+                   6 |             3
+(1 row)
+
+                                   verdict                                   
+-----------------------------------------------------------------------------
+ RESULT: stock = 6, should be 3 - LOST UPDATE (7 dispensed, only 4 deducted)
+(1 row)
+

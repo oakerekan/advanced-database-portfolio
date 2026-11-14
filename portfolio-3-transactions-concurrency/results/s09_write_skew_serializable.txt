@@ -1,0 +1,31 @@
+Scenario : s09_write_skew_serializable
+Title    : The same two nurses under SERIALIZABLE
+Expected : PostgreSQL (SSI) aborts the second nurse's transaction; 1 ICU bed stays in service
+
+Session A: Nurse A (takes ICU-01 out for cleaning) (starts at +0.0s)
+Session B: Nurse B (takes ICU-02 out for repair) (starts at +0.3s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.08s  A | ICU beds in service = 2
++ 0.42s  B |                               ICU beds in service = 2
++ 1.10s  A | rule OK (>= 2) -> ICU-01 taken out of service
++ 1.10s  A | COMMIT
++ 1.43s  B |                               ERROR:  could not serialize access due to read/write dependencies among transactions
++ 1.43s  B |                               DETAIL:  Reason code: Canceled on identification as a pivot, during write.
++ 1.44s  B |                               ERROR:  current transaction is aborted, commands ignored until end of transaction block
++ 1.44s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ bed_label | is_in_service 
+-----------+---------------
+ ICU-01    | f
+ ICU-02    | t
+(2 rows)
+
+                   verdict                   
+---------------------------------------------
+ RESULT: 1 ICU bed(s) in service - rule kept
+(1 row)
+

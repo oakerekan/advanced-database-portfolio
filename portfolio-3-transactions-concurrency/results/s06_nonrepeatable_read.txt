@@ -1,0 +1,21 @@
+Scenario : s06_nonrepeatable_read
+Title    : Non-repeatable read - a report reads the same total twice in READ COMMITTED
+Expected : the two reads inside ONE transaction disagree (10,000 then 30,000)
+
+Session A: Billing officer Lawal (end-of-day report) (starts at +0.0s)
+Session B: Cashier (posts a payment) (starts at +0.5s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.10s  A | read 1: takings today = 10000.00
++ 0.63s  B |                               posted and COMMITTED a 20,000 payment
++ 1.60s  A | read 2: takings today = 30000.00
++ 1.60s  A | COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+                                                   verdict                                                    
+--------------------------------------------------------------------------------------------------------------
+ RESULT: READ COMMITTED - each statement sees data committed before it started, so read 2 saw the new payment
+(1 row)
+

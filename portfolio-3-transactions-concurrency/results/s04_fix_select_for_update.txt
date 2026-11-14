@@ -1,0 +1,29 @@
+Scenario : s04_fix_select_for_update
+Title    : Fix 1 - pessimistic locking with SELECT ... FOR UPDATE (READ COMMITTED)
+Expected : B blocks on its read until A commits, then reads 7 and writes 3
+
+Session A: Pharmacist Musa (dispenses 3 Coartem) (starts at +0.0s)
+Session B: Pharmacist Obi (dispenses 4 Coartem) (starts at +0.5s)
+
+Timeline (seconds since start)
+------------------------------------------------------------------------------
++ 0.07s  A | read Coartem stock = 10; will dispense 3
++ 0.57s  B |                               SELECT ... FOR UPDATE (waits if the row is locked)
++ 1.58s  A | UPDATE stock = 7
++ 1.58s  A | COMMIT
++ 1.58s  B |                               read Coartem stock = 7; will dispense 4
++ 3.09s  B |                               UPDATE stock = 3
++ 3.09s  B |                               COMMIT
+------------------------------------------------------------------------------
+
+Final state (check script):
+ ikeja_coartem_stock | correct_value 
+---------------------+---------------
+                   3 |             3
+(1 row)
+
+          verdict           
+----------------------------
+ RESULT: stock = 3, correct
+(1 row)
+
