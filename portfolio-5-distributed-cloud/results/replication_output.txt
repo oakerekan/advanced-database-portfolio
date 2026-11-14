@@ -10,8 +10,8 @@ synchronous_standby_names = 'replica1' (every commit must be confirmed by replic
 ==================== 3. Replication status, seen from the primary ====================
  application_name |   state   | sync_state | sent_lsn  | replay_lsn 
 ------------------+-----------+------------+-----------+------------
- replica1         | streaming | sync       | 0/4000000 | 0/4000000
- replica2         | streaming | async      | 0/4000000 | 0/4000000
+ replica1         | streaming | sync       | 0/4000060 | 0/4000060
+ replica2         | streaming | async      | 0/4000060 | 0/4000060
 (2 rows)
 
 port 5433 in recovery (read-only standby)? f
@@ -30,9 +30,9 @@ ERROR:  cannot execute INSERT in a read-only transaction
 ==================== 6. Consistency vs availability: the synchronous standby goes down ====================
 replica1 stopped. A receptionist registers a patient on the primary (in the background)...
 3 seconds later the client is still waiting. What is it waiting for?
- pid | state  | wait_event_type | wait_event |                     query                     
------+--------+-----------------+------------+-----------------------------------------------
- 471 | active | IPC             | SyncRep    | INSERT INTO hospital.patient (hospital_no, ho
+  pid  | state  | wait_event_type | wait_event |                     query                     
+-------+--------+-----------------+------------+-----------------------------------------------
+ 18988 | active | IPC             | SyncRep    | INSERT INTO hospital.patient (hospital_no, ho
 (1 row)
 
 The receptionist gives up (simulated with pg_cancel_backend):
@@ -60,7 +60,7 @@ replica1 now has 2 of the 2 rows written while it was down
 ==================== 7. Failover: the primary crashes, replica1 is promoted ====================
 appointment committed on the primary (confirmed by synchronous replica1)
 primary killed (pg_ctl stop -m immediate = simulated crash)
-psql: error: connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused
+psql: error: connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
 replica1 promoted
 replica1 (port 5434) in recovery? f  -> it is now the primary
 appointment booked just before the crash present on the new primary? 1 row(s) -> no data lost

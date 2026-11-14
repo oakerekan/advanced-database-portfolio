@@ -12,9 +12,9 @@ shard_yab: table encounter_record created, CHECK (branch_id = 3)
 
 ==================== 3. Coordinator: partitioned table whose partitions live on the shards ====================
 Partition key: LIST (branch_id)
-Partitions: encounter_ikj FOR VALUES IN ('1'), FOREIGN,
-            encounter_lki FOR VALUES IN ('2'), FOREIGN,
-            encounter_yab FOR VALUES IN ('3'), FOREIGN
+Partitions: encounter_ikj FOR VALUES IN ('1'),
+            encounter_lki FOR VALUES IN ('2'),
+            encounter_yab FOR VALUES IN ('3')
 
 
 ==================== 4. Load 30,000 encounters THROUGH the coordinator (rows are routed by branch_id) ====================
@@ -85,7 +85,7 @@ SET
 
 ==================== 8. A wrong-branch row is rejected by the shard itself ====================
 ERROR:  new row for relation "encounter_record" violates check constraint "encounter_record_branch_id_check"
-DETAIL:  Failing row contains (999999, 2, LCH-0000001, 2026-11-14 05:12:17.296028+01, outpatient, B54, 10000.00).
+DETAIL:  Failing row contains (999999, 2, LCH-0000001, 2026-11-14 06:29:53.043462+01, outpatient, B54, 10000.00).
 -> Ikeja shard refused a Lekki row
 
 ==================== 9. Partial failure: the Lekki shard goes down ====================
@@ -98,7 +98,7 @@ Ikeja query (does not need Lekki):
 
 Group-wide query (needs every shard):
 ERROR:  could not connect to server "shard_lki"
-DETAIL:  connection to server at "localhost" (127.0.0.1), port 5442 failed: Connection refused
+DETAIL:  connection to server at "localhost" (::1), port 5442 failed: Connection refused (0x0000274D/10061)
 -> Ikeja and Yaba keep working; only Lekki's data and group-wide reports are unavailable.
 shard_lki restarted; group-wide count = 30003
 
